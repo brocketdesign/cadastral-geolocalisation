@@ -32,6 +32,7 @@ import L from 'leaflet';
 import type { ParcelleInfo, GeoResult, SearchHistoryItem } from '@/types';
 import { CARIBBEAN_TERRITORIES, getApiUrlForTerritory } from '@/lib/territories';
 import { addToHistory, getSearchHistory, toggleFavorite } from '@/lib/storage';
+import { AdTopBanner, AdSidebarCard, AdInline, ImageAdTopBanner, ImageAdSidebar, ImageAdInline } from '@/components/features/AdBanner';
 
 // Fix for default markers in Leaflet with webpack/vite
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -172,6 +173,10 @@ export default function Dashboard() {
         </p>
       </div>
 
+      {/* Ad: top banner for free users */}
+      <AdTopBanner />
+      <ImageAdTopBanner />
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Search form */}
         <div className="xl:col-span-1 space-y-6">
@@ -278,6 +283,10 @@ export default function Dashboard() {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Ad: sidebar card for free users */}
+          <AdSidebarCard />
+          <ImageAdSidebar />
 
           {/* Recent searches */}
           {recentSearches.length > 0 && (
@@ -400,6 +409,10 @@ export default function Dashboard() {
               )}
             </CardContent>
           </Card>
+
+          {/* Ad: inline between map and results for free users */}
+          <AdInline />
+          <ImageAdInline />
 
           {/* Result details */}
           {result && (

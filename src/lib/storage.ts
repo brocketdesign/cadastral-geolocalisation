@@ -1,7 +1,22 @@
-import type { SearchHistoryItem } from '@/types';
+import type { SearchHistoryItem, PlanType } from '@/types';
 
 const HISTORY_KEY = 'cadastral_search_history';
+const PLAN_KEY = 'cadastral_user_plan';
 const MAX_HISTORY = 100;
+
+export function getUserPlan(): PlanType {
+  try {
+    const plan = localStorage.getItem(PLAN_KEY);
+    if (plan === 'pro' || plan === 'enterprise') return plan;
+    return 'free';
+  } catch {
+    return 'free';
+  }
+}
+
+export function setUserPlan(plan: PlanType): void {
+  localStorage.setItem(PLAN_KEY, plan);
+}
 
 export function getSearchHistory(): SearchHistoryItem[] {
   try {
