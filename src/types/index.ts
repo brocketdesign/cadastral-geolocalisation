@@ -15,6 +15,7 @@ export interface GeoResult {
   territoire: string;
   surface?: string;
   zonage?: string;
+  polygon?: GeoJSON.Feature | null;
 }
 
 export interface SearchHistoryItem {

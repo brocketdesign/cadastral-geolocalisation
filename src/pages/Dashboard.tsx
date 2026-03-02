@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, LayersControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, LayersControl, GeoJSON } from 'react-leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -26,11 +26,10 @@ import {
   History,
   Share2,
 } from 'lucide-react';
-import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import type { ParcelleInfo, GeoResult, SearchHistoryItem } from '@/types';
-import { CARIBBEAN_TERRITORIES, getApiUrlForTerritory } from '@/lib/territories';
+import { CARIBBEAN_TERRITORIES, resolveCodeInsee, fetchCadastralParcel } from '@/lib/territories';
 import { addToHistory, getSearchHistory, toggleFavorite } from '@/lib/storage';
 import { AdTopBanner, AdSidebarCard, AdInline, ImageAdTopBanner, ImageAdSidebar, ImageAdInline } from '@/components/features/AdBanner';
 
@@ -82,42 +81,57 @@ export default function Dashboard() {
     setResult(null);
 
     try {
-      const apiUrl = getApiUrlForTerritory(parcelle.commune, parcelle.territoire);
-      const geoResponse = await axios.get(apiUrl);
-
-      if (geoResponse.data.features && geoResponse.data.features.length > 0) {
-        const feature = geoResponse.data.features[0];
-        const [lng, lat] = feature.geometry.coordinates;
-
-        const newResult: GeoResult = {
-          lat,
-          lng,
-          address: `${parcelle.commune} - Section ${parcelle.section.toUpperCase()} - Parcelle ${parcelle.numero}`,
-          commune: parcelle.commune,
-          section: parcelle.section.toUpperCase(),
-          numero: parcelle.numero,
-          territoire: selectedTerritory?.name || '',
-          surface: `${Math.floor(Math.random() * 5000 + 200)} m²`,
-          zonage: ['Zone urbaine (U)', 'Zone à urbaniser (AU)', 'Zone agricole (A)', 'Zone naturelle (N)'][
-            Math.floor(Math.random() * 4)
-          ],
-        };
-
-        setResult(newResult);
-        setMapKey((prev) => prev + 1);
-
-        // Save to history
-        const historyItem = addToHistory({
-          parcelle: { ...parcelle },
-          result: newResult,
-        });
-        setRecentSearches((prev) => [historyItem, ...prev].slice(0, 5));
-      } else {
+      // Step 1: Resolve commune name → code_insee
+      const communeInfo = await resolveCodeInsee(parcelle.commune, parcelle.territoire);
+      if (!communeInfo) {
         setError(
           'Commune non trouvée. Veuillez vérifier le nom de la commune et le territoire sélectionné.'
         );
+        return;
       }
-    } catch {
+
+      // Step 2: Fetch actual cadastral parcel from IGN API
+      const parcelData = await fetchCadastralParcel(
+        communeInfo.codeInsee,
+        parcelle.section,
+        parcelle.numero
+      );
+
+      if (!parcelData) {
+        setError(
+          `Parcelle non trouvée pour la commune ${communeInfo.cityName} (${communeInfo.codeInsee}), section ${parcelle.section.toUpperCase()}, numéro ${parcelle.numero}. Vérifiez les références cadastrales.`
+        );
+        return;
+      }
+
+      const [lat, lng] = parcelData.centroid;
+      const surfaceText = parcelData.contenance
+        ? `${parcelData.contenance} m²`
+        : undefined;
+
+      const newResult: GeoResult = {
+        lat,
+        lng,
+        address: `${communeInfo.cityName} - Section ${parcelle.section.toUpperCase()} - Parcelle ${parcelle.numero}`,
+        commune: communeInfo.cityName,
+        section: parcelle.section.toUpperCase(),
+        numero: parcelle.numero,
+        territoire: selectedTerritory?.name || '',
+        surface: surfaceText,
+        polygon: parcelData.feature,
+      };
+
+      setResult(newResult);
+      setMapKey((prev) => prev + 1);
+
+      // Save to history
+      const historyItem = addToHistory({
+        parcelle: { ...parcelle },
+        result: newResult,
+      });
+      setRecentSearches((prev) => [historyItem, ...prev].slice(0, 5));
+    } catch (err) {
+      console.error('Cadastral search error:', err);
       setError('Erreur lors de la recherche. Veuillez réessayer.');
     } finally {
       setLoading(false);
@@ -384,6 +398,18 @@ export default function Dashboard() {
                       />
                     </LayersControl.Overlay>
                   </LayersControl>
+                  {result.polygon && (
+                    <GeoJSON
+                      key={`polygon-${mapKey}`}
+                      data={result.polygon}
+                      style={{
+                        color: '#059669',
+                        weight: 3,
+                        fillColor: '#10b981',
+                        fillOpacity: 0.2,
+                      }}
+                    />
+                  )}
                   <Marker position={[result.lat, result.lng]}>
                     <Popup>
                       <div className="text-sm">

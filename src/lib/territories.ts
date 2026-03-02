@@ -81,5 +81,80 @@ export function getApiUrlForTerritory(
   const query = region && territoryCode !== 'metro'
     ? `${commune}, ${region}`
     : `${commune}, France`;
-  return `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=5`;
+  return `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&type=municipality&limit=5`;
+}
+
+/**
+ * Resolve a commune name to its INSEE code using api-adresse.data.gouv.fr
+ */
+export async function resolveCodeInsee(
+  commune: string,
+  territoryCode: string
+): Promise<{ codeInsee: string; cityName: string } | null> {
+  const url = getApiUrlForTerritory(commune, territoryCode);
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (data.features && data.features.length > 0) {
+    const props = data.features[0].properties;
+    return {
+      codeInsee: props.citycode || props.id,
+      cityName: props.city || props.name || commune,
+    };
+  }
+  return null;
+}
+
+/**
+ * Query the IGN cadastral API to get the actual parcel geometry.
+ * Uses apicarto.ign.fr/api/cadastre/parcelle with code_insee, section, and numero.
+ */
+export async function fetchCadastralParcel(
+  codeInsee: string,
+  section: string,
+  numero: string
+): Promise<{ feature: any; centroid: [number, number]; contenance: number | null } | null> {
+  // Pad numero to 4 digits (API expects e.g. "0001")
+  const paddedNumero = numero.padStart(4, '0');
+  const upperSection = section.toUpperCase();
+
+  const url = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${encodeURIComponent(codeInsee)}&section=${encodeURIComponent(upperSection)}&numero=${encodeURIComponent(paddedNumero)}`;
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (data.features && data.features.length > 0) {
+    const feature = data.features[0];
+    const centroid = computeCentroid(feature.geometry);
+    const contenance = feature.properties?.contenance ?? null;
+    return { feature, centroid, contenance };
+  }
+  return null;
+}
+
+/**
+ * Compute the centroid of a GeoJSON geometry (Point, Polygon, or MultiPolygon).
+ */
+export function computeCentroid(geometry: any): [number, number] {
+  if (geometry.type === 'Point') {
+    const [lng, lat] = geometry.coordinates;
+    return [lat, lng];
+  }
+
+  // Collect all coordinate rings
+  let allCoords: number[][] = [];
+  if (geometry.type === 'Polygon') {
+    allCoords = geometry.coordinates[0]; // outer ring
+  } else if (geometry.type === 'MultiPolygon') {
+    for (const polygon of geometry.coordinates) {
+      allCoords = allCoords.concat(polygon[0]); // outer ring of each polygon
+    }
+  }
+
+  if (allCoords.length === 0) {
+    return [0, 0];
+  }
+
+  const sumLng = allCoords.reduce((acc, c) => acc + c[0], 0);
+  const sumLat = allCoords.reduce((acc, c) => acc + c[1], 0);
+  return [sumLat / allCoords.length, sumLng / allCoords.length];
 }
