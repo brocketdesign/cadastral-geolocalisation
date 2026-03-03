@@ -32,7 +32,7 @@ import {
 } from '@/lib/mock-alerts';
 
 export default function AlertSettings() {
-  // State with mock data
+  // État avec données fictives
   const [profile, setProfile] = useState<AlertUserProfile>(MOCK_USER_PROFILE);
   const [zones, setZones] = useState<AlertZone[]>(MOCK_ALERT_ZONES);
   const [enabledAlertTypes, setEnabledAlertTypes] = useState<AlertTypeKey[]>(
@@ -46,7 +46,7 @@ export default function AlertSettings() {
   );
   const [events, setEvents] = useState<AlertEvent[]>(MOCK_ALERT_EVENTS);
 
-  // Handlers
+  // Gestionnaires d'événements
   const handleTestAlert = (zoneId: string) => {
     const zone = zones.find((z) => z.id === zoneId);
     toast.success(`Alerte test envoyée pour "${zone?.name}"`, {
@@ -121,7 +121,7 @@ export default function AlertSettings() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Inbox Tab */}
+          {/* Onglet Réception */}
           <TabsContent value="inbox" className="mt-4">
             <AlertInbox
               events={events}
@@ -130,15 +130,15 @@ export default function AlertSettings() {
             />
           </TabsContent>
 
-          {/* Settings Tab */}
+          {/* Onglet Configuration */}
           <TabsContent value="settings" className="mt-4 space-y-6">
-            {/* 1. Profile & Contact */}
+            {/* 1. Profil & Contact */}
             <ProfileContactSection
               profile={profile}
               onProfileChange={setProfile}
             />
 
-            {/* 2. Alert Zones */}
+            {/* 2. Zones d'alerte */}
             <AlertZonesSection
               zones={zones}
               territory={profile.territory}
@@ -146,13 +146,13 @@ export default function AlertSettings() {
               onTestAlert={handleTestAlert}
             />
 
-            {/* 3. Alert Types */}
+            {/* 3. Types d'alertes */}
             <AlertTypesSection
               enabledTypes={enabledAlertTypes}
               onEnabledTypesChange={setEnabledAlertTypes}
             />
 
-            {/* 4. Notification Settings */}
+            {/* 4. Paramètres de notification */}
             <NotificationSettingsSection
               prefs={notifPrefs}
               onPrefsChange={setNotifPrefs}

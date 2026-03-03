@@ -39,7 +39,7 @@ export default function NotificationSettingsSection({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
-        {/* SMS Alerts */}
+        {/* Alertes SMS */}
         <div className="p-4 rounded-lg border border-slate-200 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -82,7 +82,7 @@ export default function NotificationSettingsSection({
           </p>
         </div>
 
-        {/* Email Alerts */}
+        {/* Alertes Email */}
         <div className="p-4 rounded-lg border border-slate-200 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -125,7 +125,7 @@ export default function NotificationSettingsSection({
           </p>
         </div>
 
-        {/* Digest Frequency */}
+        {/* Fréquence du digest */}
         {prefs.emailAlerts === 'digest' && (
           <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200">
             <Label className="font-medium text-sm">Fréquence du résumé</Label>
@@ -172,7 +172,7 @@ export default function NotificationSettingsSection({
           </div>
         )}
 
-        {/* Browser / Sound */}
+        {/* Navigateur / Son */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200">
             <Label className="font-medium text-sm">Notifications navigateur</Label>
@@ -201,7 +201,7 @@ export default function NotificationSettingsSection({
           </div>
         </div>
 
-        {/* Quiet Hours */}
+        {/* Heures calmes */}
         <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200">
           <div>
             <Label className="font-medium text-sm">Heures silencieuses</Label>

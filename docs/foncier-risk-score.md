@@ -1,6 +1,6 @@
 # Foncier Risk Score — Documentation Technique
 
-> Moteur d'analyse de risque foncier propulsé par l'IA, spécialisé pour les territoires d'outre-mer français des Caraïbes.
+> u
 
 ---
 

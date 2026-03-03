@@ -52,7 +52,7 @@ export default function AdvancedFiltersSection({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
-        {/* Surface */}
+        {/* Superficie */}
         <div className="space-y-2">
           <Label className="font-medium">Surface (m²)</Label>
           <div className="flex items-center gap-3">
@@ -85,7 +85,7 @@ export default function AdvancedFiltersSection({
           </div>
         </div>
 
-        {/* Price */}
+        {/* Prix */}
         <div className="space-y-2">
           <Label className="font-medium">Prix (€)</Label>
           <div className="flex items-center gap-3">
@@ -118,7 +118,7 @@ export default function AdvancedFiltersSection({
           </div>
         </div>
 
-        {/* Parcel Type */}
+        {/* Type de parcelle */}
         <div className="space-y-2">
           <Label className="font-medium">Type de parcelle</Label>
           <div className="flex flex-wrap gap-2">
@@ -141,7 +141,7 @@ export default function AdvancedFiltersSection({
           </div>
         </div>
 
-        {/* Zoning PLU */}
+        {/* Zonage PLU */}
         <div className="space-y-2">
           <Label className="font-medium">Zonage PLU</Label>
           <div className="flex flex-wrap gap-2">
@@ -164,7 +164,7 @@ export default function AdvancedFiltersSection({
           </div>
         </div>
 
-        {/* Buildable only */}
+        {/* Constructible uniquement */}
         <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200">
           <div>
             <Label className="font-medium text-sm">

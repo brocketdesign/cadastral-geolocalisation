@@ -42,7 +42,7 @@ export default function ProfileContactSection({
 
   const handleSendOtp = () => {
     setPhoneVerifying(true);
-    // Mock Twilio OTP send
+    // Simulation envoi OTP Twilio
     setTimeout(() => {
       setPhoneVerifying(false);
       setOtpSent(true);
@@ -52,7 +52,7 @@ export default function ProfileContactSection({
 
   const handleVerifyOtp = () => {
     setPhoneVerifying(true);
-    // Mock OTP verification
+    // Simulation vérification OTP
     setTimeout(() => {
       setPhoneVerifying(false);
       setShowOtp(false);
@@ -71,7 +71,7 @@ export default function ProfileContactSection({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Full Name */}
+          {/* Nom complet */}
           <div className="space-y-1.5">
             <Label htmlFor="fullName">Nom complet *</Label>
             <Input
@@ -84,7 +84,7 @@ export default function ProfileContactSection({
             />
           </div>
 
-          {/* Agency Name */}
+          {/* Nom de l'agence */}
           <div className="space-y-1.5">
             <Label htmlFor="agencyName">Nom de l&apos;agence</Label>
             <Input
@@ -128,7 +128,7 @@ export default function ProfileContactSection({
           </p>
         </div>
 
-        {/* Phone */}
+        {/* Téléphone */}
         <div className="space-y-1.5">
           <Label htmlFor="phone">Téléphone *</Label>
           <div className="flex items-center gap-2">
@@ -173,7 +173,7 @@ export default function ProfileContactSection({
             Format +596/+590 pour les Antilles — Vérification par SMS Twilio
           </p>
 
-          {/* OTP Input */}
+          {/* Saisie du code OTP */}
           {showOtp && (
             <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
               <p className="text-sm text-blue-700 font-medium">
@@ -207,7 +207,7 @@ export default function ProfileContactSection({
           )}
         </div>
 
-        {/* Territory */}
+        {/* Territoire */}
         <div className="space-y-1.5">
           <Label>Territoire *</Label>
           <Select

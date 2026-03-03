@@ -1,13 +1,13 @@
 /* ─── Alertes Foncier Pro – Types ─── */
 
-// ── Territories ──
+// ── Territoires ──
 export type AlertTerritory =
   | 'guadeloupe'
   | 'martinique'
   | 'guyane'
   | 'reunion';
 
-// ── Zone types ──
+// ── Types de zones ──
 export type ZoneType = 'commune' | 'polygon' | 'radius';
 
 export interface AlertZone {
@@ -15,23 +15,23 @@ export interface AlertZone {
   userId: string;
   name: string;
   zoneType: ZoneType;
-  /** For commune type */
+  /** Pour le type commune */
   communes?: string[];
-  /** For polygon type (GeoJSON) */
+  /** Pour le type polygone (GeoJSON) */
   geometry?: {
     type: 'Polygon';
     coordinates: number[][][];
   };
-  /** For radius type */
+  /** Pour le type rayon */
   center?: { lat: number; lng: number };
   radiusKm?: number;
-  /** Optional specific parcel to monitor */
+  /** Parcelle spécifique à surveiller (optionnel) */
   parcelReference?: string;
   createdAt: string;
   isActive: boolean;
 }
 
-// ── Alert types ──
+// ── Types d'alertes ──
 export type AlertTypeKey =
   | 'NEW_LISTING'
   | 'PRICE_DROP'
@@ -109,7 +109,7 @@ export const ALERT_TYPES: AlertTypeConfig[] = [
   },
 ];
 
-// ── Notification preferences ──
+// ── Préférences de notification ──
 export type SmsAlertMode = 'on' | 'urgent_only' | 'off';
 export type EmailAlertMode = 'immediate' | 'digest' | 'off';
 export type DigestFrequency = 'daily' | 'weekly' | 'never';
@@ -125,7 +125,7 @@ export interface NotificationPreferences {
   quietHoursEnd: string; // "07:00"
 }
 
-// ── Advanced filters ──
+// ── Filtres avancés ──
 export type ParcelType = 'constructible' | 'agricole' | 'mixte';
 export type ZonagePLU = 'U' | 'AU' | 'NC' | 'A';
 
@@ -139,7 +139,7 @@ export interface AdvancedFilters {
   buildableOnly: boolean;
 }
 
-// ── User profile ──
+// ── Profil utilisateur ──
 export interface AlertUserProfile {
   id: string;
   email: string;
@@ -152,7 +152,7 @@ export interface AlertUserProfile {
   timezone: string;
 }
 
-// ── Full alert configuration (stored in MongoDB) ──
+// ── Configuration complète d'alerte (stockée dans MongoDB) ──
 export interface AlertConfig {
   id: string;
   userId: string;
@@ -165,7 +165,7 @@ export interface AlertConfig {
   updatedAt: string;
 }
 
-// ── Alert event (notification item) ──
+// ── Événement d'alerte (élément de notification) ──
 export type AlertPriority = 'urgent' | 'standard' | 'low';
 export type AlertChannel = 'sms' | 'email' | 'websocket';
 
@@ -183,13 +183,13 @@ export interface AlertEvent {
   channels: AlertChannel[];
   read: boolean;
   createdAt: string;
-  /** For email delivery tracking */
+  /** Pour le suivi de livraison email */
   emailSentAt?: string;
   emailOpenedAt?: string;
   smsSentAt?: string;
 }
 
-// ── Activity stats ──
+// ── Statistiques d'activité ──
 export interface AlertActivityStats {
   alertsThisMonth: number;
   smsSent: number;
@@ -197,7 +197,7 @@ export interface AlertActivityStats {
   lastAlertAt: string | null;
 }
 
-// ── Onboarding steps ──
+// ── Étapes d'intégration ──
 export interface OnboardingStep {
   id: number;
   label: string;

@@ -48,7 +48,7 @@ export default function ActivityUsageSection({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {/* Alerts this month */}
+          {/* Alertes ce mois */}
           <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100 text-center">
             <p className="text-2xl font-bold text-emerald-700">
               {stats.alertsThisMonth}
@@ -58,7 +58,7 @@ export default function ActivityUsageSection({
             </p>
           </div>
 
-          {/* SMS sent */}
+          {/* SMS envoyés */}
           <div className="p-3 rounded-lg bg-blue-50 border border-blue-100 text-center">
             <div className="flex items-center justify-center gap-1">
               <MessageSquare className="w-4 h-4 text-blue-500" />
@@ -69,7 +69,7 @@ export default function ActivityUsageSection({
             <p className="text-xs text-blue-600 mt-1">SMS envoyés</p>
           </div>
 
-          {/* Emails sent */}
+          {/* Emails envoyés */}
           <div className="p-3 rounded-lg bg-purple-50 border border-purple-100 text-center">
             <div className="flex items-center justify-center gap-1">
               <Mail className="w-4 h-4 text-purple-500" />
@@ -80,7 +80,7 @@ export default function ActivityUsageSection({
             <p className="text-xs text-purple-600 mt-1">Emails envoyés</p>
           </div>
 
-          {/* Last alert */}
+          {/* Dernière alerte */}
           <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-center">
             <div className="flex items-center justify-center gap-1">
               <Clock className="w-4 h-4 text-slate-500" />

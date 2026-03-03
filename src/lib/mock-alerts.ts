@@ -1,4 +1,4 @@
-/* ─── Mock data for Alertes Foncier Pro ─── */
+/* ─── Données fictives pour Alertes Foncier Pro ─── */
 
 import type {
   AlertUserProfile,
@@ -11,7 +11,7 @@ import type {
   OnboardingStep,
 } from '@/types/alerts';
 
-// ── Mock user profile ──
+// ── Profil utilisateur fictif ──
 export const MOCK_USER_PROFILE: AlertUserProfile = {
   id: 'usr_001',
   email: 'jean.dupont@agence-caraibes.com',
@@ -24,7 +24,7 @@ export const MOCK_USER_PROFILE: AlertUserProfile = {
   timezone: 'America/Guadeloupe',
 };
 
-// ── Mock alert zones ──
+// ── Zones d'alerte fictives ──
 export const MOCK_ALERT_ZONES: AlertZone[] = [
   {
     id: 'zone_001',
@@ -67,7 +67,7 @@ export const MOCK_ALERT_ZONES: AlertZone[] = [
   },
 ];
 
-// ── Mock enabled alert types ──
+// ── Types d'alertes activés fictifs ──
 export const MOCK_ENABLED_ALERT_TYPES: AlertTypeKey[] = [
   'NEW_LISTING',
   'PRICE_DROP',
@@ -77,7 +77,7 @@ export const MOCK_ENABLED_ALERT_TYPES: AlertTypeKey[] = [
   'RISK_PPRI',
 ];
 
-// ── Mock notification preferences ──
+// ── Préférences de notification fictives ──
 export const MOCK_NOTIFICATION_PREFS: NotificationPreferences = {
   smsAlerts: 'urgent_only',
   emailAlerts: 'immediate',
@@ -89,7 +89,7 @@ export const MOCK_NOTIFICATION_PREFS: NotificationPreferences = {
   quietHoursEnd: '07:00',
 };
 
-// ── Mock advanced filters ──
+// ── Filtres avancés fictifs ──
 export const MOCK_ADVANCED_FILTERS: AdvancedFilters = {
   minSurface: 500,
   maxSurface: 10000,
@@ -100,7 +100,7 @@ export const MOCK_ADVANCED_FILTERS: AdvancedFilters = {
   buildableOnly: true,
 };
 
-// ── Mock alert events ──
+// ── Événements d'alerte fictifs ──
 export const MOCK_ALERT_EVENTS: AlertEvent[] = [
   {
     id: 'evt_001',
@@ -221,7 +221,7 @@ export const MOCK_ALERT_EVENTS: AlertEvent[] = [
   },
 ];
 
-// ── Mock activity stats ──
+// ── Statistiques d'activité fictives ──
 export const MOCK_ACTIVITY_STATS: AlertActivityStats = {
   alertsThisMonth: 23,
   smsSent: 8,
@@ -229,7 +229,7 @@ export const MOCK_ACTIVITY_STATS: AlertActivityStats = {
   lastAlertAt: '2026-03-03T09:42:00Z',
 };
 
-// ── Mock onboarding steps ──
+// ── Étapes d'intégration fictives ──
 export const MOCK_ONBOARDING_STEPS: OnboardingStep[] = [
   { id: 1, label: 'Créer un compte', required: true, completed: true },
   { id: 2, label: "Vérifier l'email", required: true, completed: true },
@@ -242,7 +242,7 @@ export const MOCK_ONBOARDING_STEPS: OnboardingStep[] = [
   { id: 9, label: 'Tester une alerte (SMS/Email)', required: false, completed: false },
 ];
 
-// ── Communes by territory (for zone creation) ──
+// ── Communes par territoire (pour création de zone) ──
 export const COMMUNES_BY_TERRITORY: Record<string, string[]> = {
   guadeloupe: [
     'Anse-Bertrand',

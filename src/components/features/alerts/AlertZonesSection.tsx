@@ -176,7 +176,7 @@ export default function AlertZonesSection({
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              {/* Zone Name */}
+              {/* Nom de la zone */}
               <div className="space-y-1.5">
                 <Label>Nom de la zone</Label>
                 <Input
@@ -188,7 +188,7 @@ export default function AlertZonesSection({
                 />
               </div>
 
-              {/* Zone Type */}
+              {/* Type de zone */}
               <div className="space-y-1.5">
                 <Label>Type de zone</Label>
                 <div className="grid grid-cols-3 gap-2">
@@ -213,7 +213,7 @@ export default function AlertZonesSection({
                 </div>
               </div>
 
-              {/* Commune selection */}
+              {/* Sélection de commune */}
               {newZone.zoneType === 'commune' && (
                 <div className="space-y-1.5">
                   <Label>Commune(s)</Label>
@@ -237,7 +237,7 @@ export default function AlertZonesSection({
                 </div>
               )}
 
-              {/* Polygon - placeholder map */}
+              {/* Polygone - carte simulée */}
               {newZone.zoneType === 'polygon' && (
                 <div className="space-y-1.5">
                   <Label>Dessiner sur la carte</Label>
@@ -251,7 +251,7 @@ export default function AlertZonesSection({
                 </div>
               )}
 
-              {/* Radius */}
+              {/* Rayon */}
               {newZone.zoneType === 'radius' && (
                 <div className="space-y-3">
                   <div className="space-y-1.5">
@@ -288,7 +288,7 @@ export default function AlertZonesSection({
                 </div>
               )}
 
-              {/* Parcel reference */}
+              {/* Référence parcelle */}
               <div className="space-y-1.5">
                 <Label>Référence parcelle (optionnel)</Label>
                 <Input placeholder="Ex: AB-0234" />

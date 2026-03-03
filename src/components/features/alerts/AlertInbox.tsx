@@ -157,7 +157,7 @@ export default function AlertInbox({
           )}
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* Filters */}
+          {/* Filtres */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -195,7 +195,7 @@ export default function AlertInbox({
             </Select>
           </div>
 
-          {/* Event list */}
+          {/* Liste des événements */}
           {filteredEvents.length === 0 ? (
             <div className="text-center py-8 text-slate-400">
               <Bell className="w-10 h-10 mx-auto mb-2 opacity-50" />
@@ -217,14 +217,14 @@ export default function AlertInbox({
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    {/* Icon */}
+                    {/* Icône */}
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${TYPE_COLORS[event.type]}`}
                     >
                       {TYPE_ICONS[event.type]}
                     </div>
 
-                    {/* Content */}
+                    {/* Contenu */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         {!event.read && (
@@ -279,7 +279,7 @@ export default function AlertInbox({
         </CardContent>
       </Card>
 
-      {/* Detail Dialog */}
+      {/* Dialogue de détail */}
       <Dialog
         open={!!selectedEvent}
         onOpenChange={(open) => !open && setSelectedEvent(null)}
@@ -327,7 +327,7 @@ export default function AlertInbox({
                 {selectedEvent.details}
               </div>
 
-              {/* Delivery info */}
+              {/* Info de livraison */}
               <div className="border-t pt-3 space-y-1.5">
                 <p className="text-xs font-semibold text-slate-500 uppercase">
                   Canaux de notification
