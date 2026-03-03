@@ -5,6 +5,7 @@ import Dashboard from '@/pages/Dashboard';
 import HistoryPage from '@/pages/History';
 import Favorites from '@/pages/Favorites';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import RequireAuth from '@/components/features/RequireAuth';
 
 function App() {
   return (
@@ -14,29 +15,35 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/pricing" element={<Pricing />} />
 
-        {/* Dashboard pages (with sidebar layout) */}
+        {/* Protected dashboard pages (require Clerk auth) */}
         <Route
           path="/dashboard"
           element={
-            <DashboardLayout>
-              <Dashboard />
-            </DashboardLayout>
+            <RequireAuth>
+              <DashboardLayout>
+                <Dashboard />
+              </DashboardLayout>
+            </RequireAuth>
           }
         />
         <Route
           path="/history"
           element={
-            <DashboardLayout>
-              <HistoryPage />
-            </DashboardLayout>
+            <RequireAuth>
+              <DashboardLayout>
+                <HistoryPage />
+              </DashboardLayout>
+            </RequireAuth>
           }
         />
         <Route
           path="/favorites"
           element={
-            <DashboardLayout>
-              <Favorites />
-            </DashboardLayout>
+            <RequireAuth>
+              <DashboardLayout>
+                <Favorites />
+              </DashboardLayout>
+            </RequireAuth>
           }
         />
       </Routes>

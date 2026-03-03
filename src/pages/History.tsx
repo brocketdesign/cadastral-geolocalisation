@@ -14,33 +14,35 @@ import {
 } from 'lucide-react';
 import type { SearchHistoryItem } from '@/types';
 import { getSearchHistory, toggleFavorite, removeFromHistory, clearHistory } from '@/lib/storage';
+import UpgradeGate from '@/components/features/UpgradeGate';
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<SearchHistoryItem[]>([]);
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    setHistory(getSearchHistory());
+    getSearchHistory().then(setHistory);
   }, []);
 
-  const refreshHistory = () => {
-    setHistory(getSearchHistory());
+  const refreshHistory = async () => {
+    const items = await getSearchHistory();
+    setHistory(items);
   };
 
-  const handleToggleFavorite = (id: string) => {
-    toggleFavorite(id);
-    refreshHistory();
+  const handleToggleFavorite = async (id: string) => {
+    await toggleFavorite(id);
+    await refreshHistory();
   };
 
-  const handleRemove = (id: string) => {
-    removeFromHistory(id);
-    refreshHistory();
+  const handleRemove = async (id: string) => {
+    await removeFromHistory(id);
+    await refreshHistory();
   };
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     if (window.confirm('Voulez-vous vraiment supprimer tout l\'historique ?')) {
-      clearHistory();
-      refreshHistory();
+      await clearHistory();
+      await refreshHistory();
     }
   };
 
@@ -51,6 +53,11 @@ export default function HistoryPage() {
   });
 
   return (
+    <UpgradeGate
+      requiredPlan="pro"
+      featureLabel="L'historique complet des recherches est réservé au plan Pro. Passez au Pro pour retrouver toutes vos recherches passées."
+      blurContent
+    >
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -170,5 +177,6 @@ export default function HistoryPage() {
         </Card>
       )}
     </div>
+    </UpgradeGate>
   );
 }

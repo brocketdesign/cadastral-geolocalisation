@@ -4,20 +4,27 @@ import { Badge } from '@/components/ui/badge';
 import { Star, MapPin, Calendar } from 'lucide-react';
 import type { SearchHistoryItem } from '@/types';
 import { getFavorites, toggleFavorite } from '@/lib/storage';
+import UpgradeGate from '@/components/features/UpgradeGate';
 
 export default function Favorites() {
   const [favorites, setFavorites] = useState<SearchHistoryItem[]>([]);
 
   useEffect(() => {
-    setFavorites(getFavorites());
+    getFavorites().then(setFavorites);
   }, []);
 
-  const handleRemoveFavorite = (id: string) => {
-    toggleFavorite(id);
-    setFavorites(getFavorites());
+  const handleRemoveFavorite = async (id: string) => {
+    await toggleFavorite(id);
+    const updated = await getFavorites();
+    setFavorites(updated);
   };
 
   return (
+    <UpgradeGate
+      requiredPlan="pro"
+      featureLabel="Les parcelles favorites sont réservées au plan Pro. Passez au Pro pour sauvegarder et retrouver vos parcelles préférées."
+      blurContent
+    >
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Parcelles favorites</h1>
@@ -81,5 +88,6 @@ export default function Favorites() {
         </Card>
       )}
     </div>
+    </UpgradeGate>
   );
 }

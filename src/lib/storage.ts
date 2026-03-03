@@ -1,63 +1,76 @@
 import type { SearchHistoryItem, PlanType } from '@/types';
 
-const HISTORY_KEY = 'cadastral_search_history';
-const PLAN_KEY = 'cadastral_user_plan';
-const MAX_HISTORY = 100;
+const API_BASE = '/api';
 
-export function getUserPlan(): PlanType {
+// ─── User Plan ───────────────────────────────────────────────
+
+export async function getUserPlan(): Promise<PlanType> {
   try {
-    const plan = localStorage.getItem(PLAN_KEY);
-    if (plan === 'pro' || plan === 'enterprise') return plan;
+    const res = await fetch(`${API_BASE}/plan`);
+    if (!res.ok) return 'free';
+    const data = await res.json();
+    if (data.plan === 'pro' || data.plan === 'enterprise') return data.plan;
     return 'free';
   } catch {
     return 'free';
   }
 }
 
-export function setUserPlan(plan: PlanType): void {
-  localStorage.setItem(PLAN_KEY, plan);
+export async function setUserPlan(plan: PlanType): Promise<void> {
+  await fetch(`${API_BASE}/plan`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan }),
+  });
 }
 
-export function getSearchHistory(): SearchHistoryItem[] {
+// ─── Search History ──────────────────────────────────────────
+
+export async function getSearchHistory(): Promise<SearchHistoryItem[]> {
   try {
-    const data = localStorage.getItem(HISTORY_KEY);
-    return data ? JSON.parse(data) : [];
+    const res = await fetch(`${API_BASE}/history`);
+    if (!res.ok) return [];
+    return await res.json();
   } catch {
     return [];
   }
 }
 
-export function addToHistory(item: Omit<SearchHistoryItem, 'id' | 'timestamp' | 'isFavorite'>): SearchHistoryItem {
-  const history = getSearchHistory();
-  const newItem: SearchHistoryItem = {
-    ...item,
-    id: crypto.randomUUID(),
-    timestamp: Date.now(),
-    isFavorite: false,
-  };
-  const updated = [newItem, ...history].slice(0, MAX_HISTORY);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
-  return newItem;
+export async function addToHistory(
+  item: Omit<SearchHistoryItem, 'id' | 'timestamp' | 'isFavorite'>
+): Promise<SearchHistoryItem> {
+  const res = await fetch(`${API_BASE}/history`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(item),
+  });
+  return await res.json();
 }
 
-export function toggleFavorite(id: string): void {
-  const history = getSearchHistory();
-  const updated = history.map((item) =>
-    item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
-  );
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+export async function toggleFavorite(id: string): Promise<void> {
+  await fetch(`${API_BASE}/history/${id}/favorite`, {
+    method: 'PATCH',
+  });
 }
 
-export function removeFromHistory(id: string): void {
-  const history = getSearchHistory();
-  const updated = history.filter((item) => item.id !== id);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+export async function removeFromHistory(id: string): Promise<void> {
+  await fetch(`${API_BASE}/history/${id}`, {
+    method: 'DELETE',
+  });
 }
 
-export function clearHistory(): void {
-  localStorage.removeItem(HISTORY_KEY);
+export async function clearHistory(): Promise<void> {
+  await fetch(`${API_BASE}/history`, {
+    method: 'DELETE',
+  });
 }
 
-export function getFavorites(): SearchHistoryItem[] {
-  return getSearchHistory().filter((item) => item.isFavorite);
+export async function getFavorites(): Promise<SearchHistoryItem[]> {
+  try {
+    const res = await fetch(`${API_BASE}/favorites`);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
 }

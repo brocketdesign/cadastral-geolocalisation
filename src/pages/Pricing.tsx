@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,11 +26,21 @@ export default function Pricing() {
                   Accueil
                 </Button>
               </Link>
-              <Link to="/dashboard">
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-                  Dashboard
-                </Button>
-              </Link>
+              <SignedOut>
+                <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
+                  <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                    Connexion
+                  </Button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <Link to="/dashboard">
+                  <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                    Dashboard
+                  </Button>
+                </Link>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
             </div>
           </div>
         </div>

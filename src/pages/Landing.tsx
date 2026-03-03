@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -116,16 +117,26 @@ export default function Landing() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <Link to="/dashboard">
-                <Button variant="ghost" size="sm">
-                  Connexion
-                </Button>
-              </Link>
-              <Link to="/pricing">
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-                  Essai gratuit
-                </Button>
-              </Link>
+              <SignedOut>
+                <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
+                  <Button variant="ghost" size="sm">
+                    Connexion
+                  </Button>
+                </SignInButton>
+                <Link to="/pricing">
+                  <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                    Essai gratuit
+                  </Button>
+                </Link>
+              </SignedOut>
+              <SignedIn>
+                <Link to="/dashboard">
+                  <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                    Dashboard
+                  </Button>
+                </Link>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
             </div>
           </div>
         </div>

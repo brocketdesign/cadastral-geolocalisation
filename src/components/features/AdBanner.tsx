@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -110,7 +110,11 @@ function getRandomAd(excludeId?: string) {
 export function AdBanner({ variant = 'inline', className = '' }: AdBannerProps) {
   const [dismissed, setDismissed] = useState(false);
   const [ad] = useState(() => getRandomAd());
-  const plan = getUserPlan();
+  const [plan, setPlan] = useState<string>('free');
+
+  useEffect(() => {
+    getUserPlan().then(setPlan);
+  }, []);
 
   // Don't show ads to paying users
   if (plan !== 'free' || dismissed) return null;
@@ -302,7 +306,11 @@ function ImageAdWrapper({
 }) {
   const [dismissed, setDismissed] = useState(false);
   const [ad] = useState(() => getRandomImageAd(format));
-  const plan = getUserPlan();
+  const [plan, setPlan] = useState<string>('free');
+
+  useEffect(() => {
+    getUserPlan().then(setPlan);
+  }, []);
 
   if (plan !== 'free' || dismissed || !ad) return null;
 

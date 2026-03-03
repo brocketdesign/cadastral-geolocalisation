@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import {
   MapPin,
@@ -7,11 +8,12 @@ import {
   Star,
   Settings,
   Crown,
-  LogOut,
   Menu,
   X,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useUserPlan } from '@/hooks/use-user-plan';
+import UpgradePromptBanner from '@/components/features/UpgradePromptBanner';
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: Search, label: 'Recherche' },
@@ -26,6 +28,18 @@ export default function DashboardLayout({
 }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useUser();
+  const { plan } = useUserPlan();
+  const { signOut } = useClerk();
+
+  const displayName =
+    user?.firstName ?? user?.emailAddresses?.[0]?.emailAddress ?? 'Utilisateur';
+  const planLabel =
+    plan === 'enterprise'
+      ? 'Plan Entreprise'
+      : plan === 'pro'
+      ? 'Plan Pro'
+      : 'Plan Découverte';
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -88,32 +102,39 @@ export default function DashboardLayout({
               Compte
             </p>
           </div>
-          <Link
-            to="/pricing"
-            className="flex items-center gap-3 px-6 py-2.5 text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <Crown className="w-4 h-4" />
-            Passer en Pro
-          </Link>
+          {plan === 'free' && (
+            <Link
+              to="/pricing"
+              className="flex items-center gap-3 px-6 py-2.5 text-sm text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition-colors"
+            >
+              <Crown className="w-4 h-4" />
+              Passer en Pro
+            </Link>
+          )}
           <button className="flex items-center gap-3 px-6 py-2.5 text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition-colors w-full">
             <Settings className="w-4 h-4" />
             Paramètres
           </button>
         </nav>
 
-        {/* User info */}
+        {/* User info via Clerk UserButton */}
         <div className="p-4 border-t border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-sm font-bold">
-              A
-            </div>
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  avatarBox: 'w-8 h-8 ring-2 ring-emerald-500/30',
+                  userButtonPopoverCard: 'shadow-xl border border-slate-200 rounded-xl',
+                },
+              }}
+            />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">Agent Demo</p>
-              <p className="text-xs text-slate-500">Plan Découverte</p>
+              <p className="text-sm font-medium text-white truncate">
+                {displayName}
+              </p>
+              <p className="text-xs text-slate-500">{planLabel}</p>
             </div>
-            <button className="text-slate-500 hover:text-white">
-              <LogOut className="w-4 h-4" />
-            </button>
           </div>
         </div>
       </aside>
@@ -129,16 +150,21 @@ export default function DashboardLayout({
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex-1" />
-          <Link to="/pricing">
-            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-              <Crown className="w-4 h-4 mr-1" />
-              Upgrade Pro
-            </Button>
-          </Link>
+          {plan === 'free' && (
+            <Link to="/pricing">
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                <Crown className="w-4 h-4 mr-1" />
+                Upgrade Pro
+              </Button>
+            </Link>
+          )}
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 space-y-6">
+          <UpgradePromptBanner />
+          {children}
+        </main>
       </div>
     </div>
   );

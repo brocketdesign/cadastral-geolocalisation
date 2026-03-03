@@ -32,6 +32,9 @@ import type { ParcelleInfo, GeoResult, SearchHistoryItem } from '@/types';
 import { CARIBBEAN_TERRITORIES, resolveCodeInsee, fetchCadastralParcel, searchCommunes } from '@/lib/territories';
 import { addToHistory, getSearchHistory, toggleFavorite } from '@/lib/storage';
 import { AdTopBanner, AdSidebarCard, AdInline, ImageAdTopBanner, ImageAdSidebar, ImageAdInline } from '@/components/features/AdBanner';
+import { useUserPlan } from '@/hooks/use-user-plan';
+import { canSearch, incrementDailySearch, getRemainingSearches } from '@/lib/usage-limits';
+import SearchLimitModal from '@/components/features/SearchLimitModal';
 
 // Fix for default markers in Leaflet with webpack/vite
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -46,6 +49,8 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function Dashboard() {
+  const { plan } = useUserPlan();
+  const [limitModalOpen, setLimitModalOpen] = useState(false);
   const [parcelle, setParcelle] = useState<ParcelleInfo>({
     commune: '',
     section: '',
@@ -57,9 +62,12 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [mapKey, setMapKey] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>(() =>
-    getSearchHistory().slice(0, 5)
-  );
+  const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([]);
+
+  // Load recent searches from API on mount
+  useEffect(() => {
+    getSearchHistory().then((items) => setRecentSearches(items.slice(0, 5)));
+  }, []);
 
   // Commune autocomplete state
   const [communeSuggestions, setCommuneSuggestions] = useState<{ nom: string; code: string }[]>([]);
@@ -136,6 +144,12 @@ export default function Dashboard() {
       return;
     }
 
+    // Free-plan daily limit gate
+    if (plan === 'free' && !canSearch('free')) {
+      setLimitModalOpen(true);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setResult(null);
@@ -184,8 +198,13 @@ export default function Dashboard() {
       setResult(newResult);
       setMapKey((prev) => prev + 1);
 
+      // Track daily usage for free plan
+      if (plan === 'free') {
+        incrementDailySearch();
+      }
+
       // Save to history
-      const historyItem = addToHistory({
+      const historyItem = await addToHistory({
         parcelle: { ...parcelle },
         result: newResult,
       });
@@ -232,9 +251,10 @@ export default function Dashboard() {
     }
   };
 
-  const handleToggleFavorite = (id: string) => {
-    toggleFavorite(id);
-    setRecentSearches(getSearchHistory().slice(0, 5));
+  const handleToggleFavorite = async (id: string) => {
+    await toggleFavorite(id);
+    const history = await getSearchHistory();
+    setRecentSearches(history.slice(0, 5));
   };
 
   return (
@@ -383,6 +403,11 @@ export default function Dashboard() {
                   </>
                 )}
               </Button>
+              {plan === 'free' && (
+                <p className="text-xs text-center text-slate-500 mt-2">
+                  {getRemainingSearches('free')} recherche{getRemainingSearches('free') !== 1 ? 's' : ''} restante{getRemainingSearches('free') !== 1 ? 's' : ''} aujourd'hui
+                </p>
+              )}
             </CardContent>
           </Card>
 
@@ -645,6 +670,9 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Search limit modal for free users */}
+      <SearchLimitModal open={limitModalOpen} onOpenChange={setLimitModalOpen} />
     </div>
   );
 }

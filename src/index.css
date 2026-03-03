@@ -73,3 +73,64 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  Clerk modal / component overrides                                  */
+/* ------------------------------------------------------------------ */
+.cl-card {
+  box-shadow: 0 20px 60px -12px rgb(0 0 0 / 0.15) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
+}
+
+.cl-headerTitle {
+  font-weight: 700 !important;
+}
+
+.cl-formButtonPrimary {
+  background-color: #059669 !important;
+  transition: background-color 0.15s ease;
+}
+.cl-formButtonPrimary:hover {
+  background-color: #047857 !important;
+}
+
+.cl-footerActionLink,
+.cl-formFieldAction,
+.cl-identityPreviewEditButton {
+  color: #059669 !important;
+}
+.cl-footerActionLink:hover,
+.cl-formFieldAction:hover,
+.cl-identityPreviewEditButton:hover {
+  color: #047857 !important;
+}
+
+.cl-socialButtonsBlockButton {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.5rem !important;
+  transition: background-color 0.15s ease;
+}
+.cl-socialButtonsBlockButton:hover {
+  background-color: hsl(var(--secondary)) !important;
+}
+
+.cl-formFieldInput {
+  border-color: hsl(var(--border)) !important;
+  border-radius: 0.5rem !important;
+}
+.cl-formFieldInput:focus {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15) !important;
+}
+
+.cl-modalBackdrop {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.cl-userButtonPopoverCard {
+  box-shadow: 0 20px 60px -12px rgb(0 0 0 / 0.15) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
+}
