@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
+import { UserButton, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import {
   MapPin,
@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   Shield,
+  BellRing,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useUserPlan } from '@/hooks/use-user-plan';
@@ -19,6 +20,7 @@ import UpgradePromptBanner from '@/components/features/UpgradePromptBanner';
 const NAV_ITEMS = [
   { to: '/dashboard', icon: Search, label: 'Recherche' },
   { to: '/risk-analysis', icon: Shield, label: 'Risk Score IA' },
+  { to: '/alerts', icon: BellRing, label: 'Alertes Pro' },
   { to: '/history', icon: History, label: 'Historique' },
   { to: '/favorites', icon: Star, label: 'Favoris' },
 ];
@@ -32,7 +34,6 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useUser();
   const { plan } = useUserPlan();
-  const { signOut } = useClerk();
 
   const displayName =
     user?.firstName ?? user?.emailAddresses?.[0]?.emailAddress ?? 'Utilisateur';

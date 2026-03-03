@@ -1,10 +1,8 @@
-import type { Appearance } from '@clerk/clerk-react';
-
 /**
  * Custom Clerk appearance to match the CadaStreMap emerald brand.
  * Applied globally via <ClerkProvider appearance={clerkAppearance}>.
  */
-export const clerkAppearance: Appearance = {
+export const clerkAppearance = {
   variables: {
     colorPrimary: '#059669',        // emerald-600
     colorText: '#0f172a',           // slate-900
