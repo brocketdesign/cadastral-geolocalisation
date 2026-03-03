@@ -133,6 +133,35 @@ export async function fetchCadastralParcel(
 }
 
 /**
+ * Search for communes matching a query string, optionally filtered by territory/department.
+ * Uses the geo.api.gouv.fr API.
+ */
+export async function searchCommunes(
+  query: string,
+  territoryCode: string
+): Promise<{ nom: string; code: string }[]> {
+  if (!query || query.length < 1) return [];
+
+  const params = new URLSearchParams({
+    nom: query,
+    fields: 'nom,code',
+    boost: 'population',
+    limit: '10',
+  });
+
+  // Filter by department code for DOM-TOM territories
+  if (territoryCode && territoryCode !== 'metro') {
+    params.set('codeDepartement', territoryCode);
+  }
+
+  const url = `https://geo.api.gouv.fr/communes?${params.toString()}`;
+  const response = await fetch(url);
+  if (!response.ok) return [];
+  const data: { nom: string; code: string }[] = await response.json();
+  return data;
+}
+
+/**
  * Compute the centroid of a GeoJSON geometry (Point, Polygon, or MultiPolygon).
  */
 export function computeCentroid(geometry: any): [number, number] {

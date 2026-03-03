@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, LayersControl, GeoJSON } from 'react-leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -29,7 +29,7 @@ import {
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import type { ParcelleInfo, GeoResult, SearchHistoryItem } from '@/types';
-import { CARIBBEAN_TERRITORIES, resolveCodeInsee, fetchCadastralParcel } from '@/lib/territories';
+import { CARIBBEAN_TERRITORIES, resolveCodeInsee, fetchCadastralParcel, searchCommunes } from '@/lib/territories';
 import { addToHistory, getSearchHistory, toggleFavorite } from '@/lib/storage';
 import { AdTopBanner, AdSidebarCard, AdInline, ImageAdTopBanner, ImageAdSidebar, ImageAdInline } from '@/components/features/AdBanner';
 
@@ -61,6 +61,14 @@ export default function Dashboard() {
     getSearchHistory().slice(0, 5)
   );
 
+  // Commune autocomplete state
+  const [communeSuggestions, setCommuneSuggestions] = useState<{ nom: string; code: string }[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [communeLoading, setCommuneLoading] = useState(false);
+  const communeInputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const selectedTerritory = CARIBBEAN_TERRITORIES.find(
     (t) => t.code === parcelle.territoire
   );
@@ -68,7 +76,59 @@ export default function Dashboard() {
   const handleInputChange = (field: keyof ParcelleInfo, value: string) => {
     setParcelle((prev) => ({ ...prev, [field]: value }));
     setError(null);
+
+    // Trigger commune autocomplete
+    if (field === 'commune') {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (value.length >= 1) {
+        setCommuneLoading(true);
+        debounceRef.current = setTimeout(async () => {
+          try {
+            const results = await searchCommunes(value, parcelle.territoire);
+            setCommuneSuggestions(results);
+            setShowSuggestions(results.length > 0);
+          } catch {
+            setCommuneSuggestions([]);
+            setShowSuggestions(false);
+          } finally {
+            setCommuneLoading(false);
+          }
+        }, 250);
+      } else {
+        setCommuneSuggestions([]);
+        setShowSuggestions(false);
+        setCommuneLoading(false);
+      }
+    }
+
+    // Reset commune suggestions when territory changes
+    if (field === 'territoire') {
+      setCommuneSuggestions([]);
+      setShowSuggestions(false);
+    }
   };
+
+  const selectCommune = (nom: string) => {
+    setParcelle((prev) => ({ ...prev, commune: nom }));
+    setShowSuggestions(false);
+    setCommuneSuggestions([]);
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node) &&
+        communeInputRef.current &&
+        !communeInputRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const searchParcelle = async () => {
     if (!parcelle.commune || !parcelle.section || !parcelle.numero) {
@@ -233,20 +293,48 @@ export default function Dashboard() {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label htmlFor="commune">Commune</Label>
-                <Input
-                  id="commune"
-                  placeholder={
-                    parcelle.territoire === '971'
-                      ? 'Ex: Pointe-à-Pitre, Les Abymes...'
-                      : parcelle.territoire === '972'
-                      ? 'Ex: Fort-de-France, Le Lamentin...'
-                      : 'Ex: nom de la commune...'
-                  }
-                  value={parcelle.commune}
-                  onChange={(e) => handleInputChange('commune', e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    id="commune"
+                    ref={communeInputRef}
+                    placeholder={
+                      parcelle.territoire === '971'
+                        ? 'Ex: Pointe-à-Pitre, Les Abymes...'
+                        : parcelle.territoire === '972'
+                        ? 'Ex: Fort-de-France, Le Lamentin...'
+                        : 'Ex: nom de la commune...'
+                    }
+                    value={parcelle.commune}
+                    onChange={(e) => handleInputChange('commune', e.target.value)}
+                    onFocus={() => {
+                      if (communeSuggestions.length > 0) setShowSuggestions(true);
+                    }}
+                    autoComplete="off"
+                  />
+                  {communeLoading && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-slate-400" />
+                  )}
+                </div>
+                {showSuggestions && communeSuggestions.length > 0 && (
+                  <div
+                    ref={suggestionsRef}
+                    className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
+                  >
+                    {communeSuggestions.map((commune) => (
+                      <button
+                        key={commune.code}
+                        type="button"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-emerald-50 hover:text-emerald-700 transition-colors flex items-center justify-between gap-2"
+                        onClick={() => selectCommune(commune.nom)}
+                      >
+                        <span className="font-medium">{commune.nom}</span>
+                        <span className="text-xs text-slate-400">{commune.code}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
