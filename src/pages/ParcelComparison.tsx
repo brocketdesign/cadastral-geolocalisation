@@ -417,7 +417,7 @@ function AddParcelDialog({ open, onClose, onAdd, existingCount }: AddParcelDialo
 // ─── Mini Map ─────────────────────────────────────────────────────────────────
 function MiniMap({ lat, lng, mapId }: { lat: number; lng: number; mapId: string }) {
   return (
-    <div className="h-36 w-full rounded-md overflow-hidden border border-slate-200">
+    <div className="h-32 sm:h-36 w-full rounded-md overflow-hidden border border-slate-200">
       <MapContainer
         key={mapId}
         center={[lat, lng]}
@@ -472,7 +472,7 @@ function ParcelCard({ parcel, winners, onRemove, onViewDetail }: ParcelCardProps
 
   return (
     <Card
-      className={`flex flex-col min-w-[220px] max-w-[280px] flex-shrink-0 relative transition-shadow hover:shadow-md ${
+      className={`flex flex-col w-full relative transition-shadow hover:shadow-md ${
         isBestScore ? 'ring-2 ring-emerald-500 shadow-emerald-100 shadow-md' : ''
       }`}
     >
@@ -687,7 +687,7 @@ function AddSlotCard({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="min-w-[220px] max-w-[280px] flex-shrink-0 h-full min-h-[420px] flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40 transition-all group"
+      className="w-full min-h-[320px] flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40 transition-all group"
     >
       <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
         <Plus className="w-6 h-6 text-slate-400 group-hover:text-emerald-600" />
@@ -931,11 +931,11 @@ function WinnerLegend({ winners, parcels }: { winners: WinnerMap; parcels: Compa
     { icon: '📈', label: 'Meilleur ROI estimé', id: winners.meilleurROI },
   ];
   return (
-    <div className="flex flex-wrap gap-2 text-xs">
+    <div className="flex flex-wrap gap-2 text-xs overflow-x-auto pb-1">
       {items.map((item) => (
         <div
           key={item.label}
-          className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-2.5 py-1 shadow-sm"
+          className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-2.5 py-1 shadow-sm whitespace-nowrap flex-shrink-0"
         >
           <span>{item.icon}</span>
           <span className="text-slate-500">{item.label} :</span>
@@ -1004,15 +1004,15 @@ export default function ParcelComparison() {
   };
 
   return (
-    <div className="space-y-6 p-1">
+    <div className="space-y-6 p-1 max-w-full overflow-hidden">
       {/* ── Top Bar ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-emerald-500" />
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500 flex-shrink-0" />
             Comparaison Foncière
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Comparez jusqu'à 5 parcelles côte à côte — métriques, risques et potentiel
           </p>
         </div>
@@ -1024,7 +1024,8 @@ export default function ParcelComparison() {
             disabled={parcels.length >= 5}
           >
             <Plus className="w-4 h-4 mr-1.5" />
-            Ajouter une parcelle
+            <span className="hidden sm:inline">Ajouter une parcelle</span>
+            <span className="sm:hidden">Ajouter</span>
           </Button>
 
           <Badge variant="outline" className="text-xs font-semibold px-2.5 py-1 h-8 border-slate-300">
@@ -1107,8 +1108,8 @@ export default function ParcelComparison() {
           </Button>
         </div>
       ) : (
-        <div className="overflow-x-auto pb-2">
-          <div className="flex gap-4 min-w-max">
+        <div className="overflow-x-auto pb-2 -mx-1 px-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 pt-2">
             {parcels.map((p) => (
               <ParcelCard
                 key={p.id}
@@ -1145,7 +1146,7 @@ export default function ParcelComparison() {
           </button>
 
           {tableExpanded && (
-            <div className="px-5 pb-5">
+            <div className="px-2 sm:px-5 pb-5 overflow-x-auto">
               <ComparisonTable parcels={parcels} winners={winners} />
             </div>
           )}
