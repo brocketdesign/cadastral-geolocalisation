@@ -15,8 +15,8 @@ export const clerkAppearance = {
   },
   elements: {
     card: 'shadow-xl border border-slate-200 rounded-xl',
-    headerTitle: 'text-slate-900 font-bold text-xl',
-    headerSubtitle: 'text-slate-500 text-sm',
+    headerTitle: 'text-slate-900 font-bold text-xl text-center',
+    headerSubtitle: 'text-slate-500 text-sm text-center',
     socialButtonsBlockButton:
       'border border-slate-200 hover:bg-slate-50 transition-colors rounded-lg',
     socialButtonsBlockButtonText: 'text-slate-700 font-medium text-sm',

@@ -16,9 +16,9 @@ export default function RequireAuth({ children }: RequireAuthProps) {
       <SignedIn>{children}</SignedIn>
       <SignedOut>
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-sky-50 p-4">
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-md mx-auto">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className="text-2xl font-bold text-slate-900 text-center">
                 Connectez-vous à{' '}
                 <span className="text-emerald-600">CadaStreMap</span>
               </h2>

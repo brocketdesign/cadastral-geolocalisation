@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { exportRiskAnalysisPDF } from '@/lib/export-risk-pdf';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,7 @@ import {
   Crown,
   Brain,
   FileText,
+  Download,
 } from 'lucide-react';
 import type { RiskAnalysisResult } from '@/types';
 import { CARIBBEAN_TERRITORIES } from '@/lib/territories';
@@ -55,6 +57,7 @@ export default function RiskAnalysis() {
   const [lng, setLng] = useState(searchParams.get('lng') || '');
 
   const [loading, setLoading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RiskAnalysisResult | null>(null);
   const [history, setHistory] = useState<RiskAnalysisResult[]>([]);
@@ -133,6 +136,16 @@ export default function RiskAnalysis() {
 
   const remaining = getRemainingAnalyses(plan);
 
+  const handleExportPDF = async () => {
+    if (!result) return;
+    setPdfLoading(true);
+    try {
+      await exportRiskAnalysisPDF(result);
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -150,10 +163,27 @@ export default function RiskAnalysis() {
             </div>
           </div>
         </div>
-        <Badge variant="outline" className="border-emerald-300 text-emerald-700 bg-emerald-50">
-          <Brain className="w-3.5 h-3.5 mr-1" />
-          IA
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="border-emerald-300 text-emerald-700 bg-emerald-50">
+            <Brain className="w-3.5 h-3.5 mr-1" />
+            IA
+          </Badge>
+          {result && (
+            <Button
+              size="sm"
+              onClick={handleExportPDF}
+              disabled={pdfLoading}
+              className="bg-slate-900 hover:bg-slate-800 text-white"
+            >
+              {pdfLoading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4 mr-2" />
+              )}
+              {pdfLoading ? 'Génération...' : 'Exporter en PDF'}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Free-plan limit warning */}
@@ -404,6 +434,19 @@ export default function RiskAnalysis() {
                           minute: '2-digit',
                         })}
                       </p>
+                      <Button
+                        size="sm"
+                        onClick={handleExportPDF}
+                        disabled={pdfLoading}
+                        className="mt-3 bg-emerald-600 hover:bg-emerald-500 text-white"
+                      >
+                        {pdfLoading ? (
+                          <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                        ) : (
+                          <Download className="w-3.5 h-3.5 mr-1.5" />
+                        )}
+                        {pdfLoading ? 'Génération du PDF...' : 'Télécharger le rapport PDF'}
+                      </Button>
                     </div>
                   </div>
                 </div>
