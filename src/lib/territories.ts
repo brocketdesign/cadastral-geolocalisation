@@ -116,7 +116,8 @@ export async function fetchCadastralParcel(
 ): Promise<{ feature: any; centroid: [number, number]; contenance: number | null } | null> {
   // Pad numero to 4 digits (API expects e.g. "0001")
   const paddedNumero = numero.padStart(4, '0');
-  const upperSection = section.toUpperCase();
+  // Pad section to 2 characters (API expects e.g. "0W" not "W")
+  const upperSection = section.toUpperCase().padStart(2, '0');
 
   const url = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${encodeURIComponent(codeInsee)}&section=${encodeURIComponent(upperSection)}&numero=${encodeURIComponent(paddedNumero)}`;
   const response = await fetch(url);
