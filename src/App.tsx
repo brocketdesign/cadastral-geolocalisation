@@ -4,6 +4,7 @@ import Pricing from '@/pages/Pricing';
 import Dashboard from '@/pages/Dashboard';
 import HistoryPage from '@/pages/History';
 import Favorites from '@/pages/Favorites';
+import RiskAnalysis from '@/pages/RiskAnalysis';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import RequireAuth from '@/components/features/RequireAuth';
 
@@ -42,6 +43,16 @@ function App() {
             <RequireAuth>
               <DashboardLayout>
                 <Favorites />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/risk-analysis"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <RiskAnalysis />
               </DashboardLayout>
             </RequireAuth>
           }

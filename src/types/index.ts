@@ -49,3 +49,69 @@ export interface PricingPlan {
 }
 
 export type MapLayer = 'osm' | 'satellite' | 'cadastral';
+
+/* ─── Foncier Risk Score ─── */
+
+export interface RiskCategory {
+  score: number;
+  commentaire: string;
+  [key: string]: unknown;
+}
+
+export interface RiskConstructibilite extends RiskCategory {
+  zonePLU: string;
+  cos: string;
+}
+
+export interface RiskInondation extends RiskCategory {
+  zonePPRI: string;
+}
+
+export interface RiskSismique extends RiskCategory {
+  zoneAlea: string;
+}
+
+export interface RiskLoiLittoral extends RiskCategory {
+  applicable: boolean;
+}
+
+export interface RiskServitudes extends RiskCategory {
+  types: string[];
+}
+
+export interface RiskMarcheFoncier {
+  prixMoyenM2: string;
+  tendance: 'HAUSSE' | 'STABLE' | 'BAISSE';
+  commentaire: string;
+}
+
+export interface RiskUrbanisme {
+  projetsProches: string[];
+  tempsEstimePermis: string;
+  commentaire: string;
+}
+
+export interface RiskAnalysisResult {
+  id: string;
+  parcelRef: string;
+  commune: string;
+  section: string;
+  numero: string;
+  territoire: string;
+  surface: string | null;
+  lat: number | null;
+  lng: number | null;
+  scoreGlobal: number;
+  categorie: 'FAIBLE' | 'MODÉRÉ' | 'ÉLEVÉ' | 'CRITIQUE';
+  constructibilite: RiskConstructibilite | null;
+  risqueInondation: RiskInondation | null;
+  risqueSismique: RiskSismique | null;
+  risqueVolcanique: RiskCategory | null;
+  loiLittoral: RiskLoiLittoral | null;
+  servitudes: RiskServitudes | null;
+  marcheFoncier: RiskMarcheFoncier | null;
+  urbanisme: RiskUrbanisme | null;
+  resumeIA: string;
+  recommandations: string[];
+  createdAt: number;
+}

@@ -10,6 +10,7 @@ import {
   Crown,
   Menu,
   X,
+  Shield,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useUserPlan } from '@/hooks/use-user-plan';
@@ -17,6 +18,7 @@ import UpgradePromptBanner from '@/components/features/UpgradePromptBanner';
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: Search, label: 'Recherche' },
+  { to: '/risk-analysis', icon: Shield, label: 'Risk Score IA' },
   { to: '/history', icon: History, label: 'Historique' },
   { to: '/favorites', icon: Star, label: 'Favoris' },
 ];

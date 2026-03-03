@@ -9,6 +9,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     description: 'Pour découvrir la plateforme et faire quelques recherches.',
     features: [
       '5 recherches par jour',
+      '1 analyse Foncier Risk Score IA / jour',
       'France métropolitaine uniquement',
       'Affichage carte standard',
       'Coordonnées GPS',
@@ -25,6 +26,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Pour les agents immobiliers indépendants et petites agences.',
     features: [
       'Recherches illimitées',
+      'Foncier Risk Score IA illimité',
       'Tous les territoires Caraïbe & Outre-mer',
       'Vue satellite & cadastrale',
       'Historique de recherche complet',

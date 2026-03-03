@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, LayersControl, GeoJSON } from 'react-leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,6 +26,7 @@ import {
   Star,
   History,
   Share2,
+  Shield,
 } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -50,6 +52,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function Dashboard() {
   const { plan } = useUserPlan();
+  const navigate = useNavigate();
   const [limitModalOpen, setLimitModalOpen] = useState(false);
   const [parcelle, setParcelle] = useState<ParcelleInfo>({
     commune: '',
@@ -646,6 +649,28 @@ export default function Dashboard() {
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Géoportail Urbanisme
+                    </Button>
+
+                    <Button
+                      className="w-full justify-start bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
+                      onClick={() => {
+                        const params = new URLSearchParams({
+                          commune: result.commune,
+                          section: result.section,
+                          numero: result.numero,
+                          territoire: parcelle.territoire,
+                          surface: result.surface || '',
+                          lat: result.lat.toString(),
+                          lng: result.lng.toString(),
+                        });
+                        navigate(`/risk-analysis?${params.toString()}`);
+                      }}
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      Analyser le risque IA
+                      <Badge variant="secondary" className="ml-auto text-[10px] bg-white/20 text-white">
+                        NOUVEAU
+                      </Badge>
                     </Button>
 
                     <Button

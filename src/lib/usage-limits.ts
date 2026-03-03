@@ -9,6 +9,7 @@
 import type { PlanType } from '@/types';
 
 const DAILY_SEARCH_KEY = 'cadastral_daily_searches';
+const DAILY_ANALYSIS_KEY = 'cadastral_daily_analyses';
 const PLAN_META_KEY = 'cadastral_user_plan';
 
 /* ------------------------------------------------------------------ */
@@ -17,6 +18,7 @@ const PLAN_META_KEY = 'cadastral_user_plan';
 
 interface PlanLimits {
   maxDailySearches: number;
+  maxDailyAnalyses: number;
   canAccessHistory: boolean;
   canAccessFavorites: boolean;
   canExportPDF: boolean;
@@ -29,6 +31,7 @@ interface PlanLimits {
 export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   free: {
     maxDailySearches: 5,
+    maxDailyAnalyses: 1,
     canAccessHistory: false,
     canAccessFavorites: false,
     canExportPDF: false,
@@ -39,6 +42,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   },
   pro: {
     maxDailySearches: Infinity,
+    maxDailyAnalyses: Infinity,
     canAccessHistory: true,
     canAccessFavorites: true,
     canExportPDF: true,
@@ -49,6 +53,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   },
   enterprise: {
     maxDailySearches: Infinity,
+    maxDailyAnalyses: Infinity,
     canAccessHistory: true,
     canAccessFavorites: true,
     canExportPDF: true,
@@ -108,6 +113,48 @@ export function getRemainingSearches(plan: PlanType): number {
 
 export function canSearch(plan: PlanType): boolean {
   return getRemainingSearches(plan) > 0;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Daily analysis tracker                                             */
+/* ------------------------------------------------------------------ */
+
+function getAnalysisTracker(): DailyTracker {
+  try {
+    const raw = localStorage.getItem(DAILY_ANALYSIS_KEY);
+    if (raw) {
+      const data: DailyTracker = JSON.parse(raw);
+      if (data.date === todayKey()) return data;
+    }
+  } catch {
+    // corrupted – ignore
+  }
+  return { date: todayKey(), count: 0 };
+}
+
+function saveAnalysisTracker(tracker: DailyTracker) {
+  localStorage.setItem(DAILY_ANALYSIS_KEY, JSON.stringify(tracker));
+}
+
+export function getDailyAnalysisCount(): number {
+  return getAnalysisTracker().count;
+}
+
+export function incrementDailyAnalysis(): number {
+  const tracker = getAnalysisTracker();
+  tracker.count += 1;
+  saveAnalysisTracker(tracker);
+  return tracker.count;
+}
+
+export function getRemainingAnalyses(plan: PlanType): number {
+  const limits = PLAN_LIMITS[plan];
+  if (limits.maxDailyAnalyses === Infinity) return Infinity;
+  return Math.max(0, limits.maxDailyAnalyses - getDailyAnalysisCount());
+}
+
+export function canAnalyze(plan: PlanType): boolean {
+  return getRemainingAnalyses(plan) > 0;
 }
 
 /* ------------------------------------------------------------------ */
