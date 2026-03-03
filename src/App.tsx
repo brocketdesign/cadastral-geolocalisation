@@ -6,6 +6,7 @@ import HistoryPage from '@/pages/History';
 import Favorites from '@/pages/Favorites';
 import RiskAnalysis from '@/pages/RiskAnalysis';
 import AlertSettings from '@/pages/AlertSettings';
+import AccountSettings from '@/pages/AccountSettings';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import RequireAuth from '@/components/features/RequireAuth';
 
@@ -64,6 +65,16 @@ function App() {
             <RequireAuth>
               <DashboardLayout>
                 <AlertSettings />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <AccountSettings />
               </DashboardLayout>
             </RequireAuth>
           }

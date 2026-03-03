@@ -37,6 +37,7 @@ import { AdTopBanner, AdSidebarCard, AdInline, ImageAdTopBanner, ImageAdSidebar,
 import { useUserPlan } from '@/hooks/use-user-plan';
 import { canSearch, incrementDailySearch, getRemainingSearches } from '@/lib/usage-limits';
 import SearchLimitModal from '@/components/features/SearchLimitModal';
+import { exportParcellePDF } from '@/lib/export-parcelle-pdf';
 
 // Fix for default markers in Leaflet with webpack/vite
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -65,6 +66,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [mapKey, setMapKey] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([]);
 
   // Load recent searches from API on mount
@@ -675,18 +677,25 @@ export default function Dashboard() {
 
                     <Button
                       className="w-full justify-start bg-emerald-600 hover:bg-emerald-700"
-                      onClick={() => {
-                        // Simulate PDF export
-                        alert(
-                          'Export PDF disponible avec le plan Pro.\nMettez à niveau pour générer des rapports professionnels.'
-                        );
+                      disabled={pdfLoading}
+                      onClick={async () => {
+                        if (!result) return;
+                        setPdfLoading(true);
+                        try {
+                          await exportParcellePDF(result);
+                        } catch (err) {
+                          console.error('PDF export error:', err);
+                        } finally {
+                          setPdfLoading(false);
+                        }
                       }}
                     >
-                      <Download className="w-4 h-4 mr-2" />
-                      Exporter en PDF
-                      <Badge variant="secondary" className="ml-auto text-[10px]">
-                        PRO
-                      </Badge>
+                      {pdfLoading ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4 mr-2" />
+                      )}
+                      {pdfLoading ? 'Génération...' : 'Exporter en PDF'}
                     </Button>
                   </div>
                 </div>

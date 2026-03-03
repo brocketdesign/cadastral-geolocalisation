@@ -115,10 +115,18 @@ export default function DashboardLayout({
               Passer en Pro
             </Link>
           )}
-          <button className="flex items-center gap-3 px-6 py-2.5 text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition-colors w-full">
+          <Link
+            to="/settings"
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors w-full ${
+              location.pathname === '/settings'
+                ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
             <Settings className="w-4 h-4" />
             Paramètres
-          </button>
+          </Link>
         </nav>
 
         {/* User info via Clerk UserButton */}
