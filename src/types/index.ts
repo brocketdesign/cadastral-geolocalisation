@@ -115,3 +115,34 @@ export interface RiskAnalysisResult {
   recommandations: string[];
   createdAt: number;
 }
+
+/* ─── Parcel Comparison ─── */
+
+export interface ComparisonParcel {
+  id: string;
+  ref: string;
+  territoire: string;
+  commune: string;
+  section: string;
+  numero: string;
+  lat: number;
+  lng: number;
+  surface: number; // m²
+  surfaceConstructible: number; // m²
+  prix: number; // €
+  zonage: string;
+  riskScore: number; // 0-100
+  scoreGlobal: number; // 0-100
+  cos: string;
+  potentielSHON: number; // m² SHON
+  prixMoyenM2Marche: number; // €/m² marché
+  tendanceMarche: 'HAUSSE' | 'STABLE' | 'BAISSE';
+  servitudes: string[];
+  addedAt: number;
+}
+
+export type ComparisonWinnerKey =
+  | 'meilleurPrixM2'
+  | 'meilleureConstruction'
+  | 'moinsDeRisques'
+  | 'scoreGlobal';

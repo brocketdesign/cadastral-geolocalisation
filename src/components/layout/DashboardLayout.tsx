@@ -12,6 +12,7 @@ import {
   X,
   Shield,
   BellRing,
+  TrendingUp,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useUserPlan } from '@/hooks/use-user-plan';
@@ -21,6 +22,7 @@ import AdminPanel from '@/components/features/AdminPanel';
 const NAV_ITEMS = [
   { to: '/dashboard', icon: Search, label: 'Recherche' },
   { to: '/risk-analysis', icon: Shield, label: 'Risk Score IA' },
+  { to: '/comparison', icon: TrendingUp, label: 'Comparaison' },
   { to: '/alerts', icon: BellRing, label: 'Alertes Pro' },
   { to: '/history', icon: History, label: 'Historique' },
   { to: '/favorites', icon: Star, label: 'Favoris' },

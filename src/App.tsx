@@ -5,6 +5,7 @@ import Dashboard from '@/pages/Dashboard';
 import HistoryPage from '@/pages/History';
 import Favorites from '@/pages/Favorites';
 import RiskAnalysis from '@/pages/RiskAnalysis';
+import ParcelComparison from '@/pages/ParcelComparison';
 import AlertSettings from '@/pages/AlertSettings';
 import AccountSettings from '@/pages/AccountSettings';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -55,6 +56,16 @@ function App() {
             <RequireAuth>
               <DashboardLayout>
                 <RiskAnalysis />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/comparison"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <ParcelComparison />
               </DashboardLayout>
             </RequireAuth>
           }
