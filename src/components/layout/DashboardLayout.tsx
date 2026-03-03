@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
+import { UserButton, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import {
   MapPin,
@@ -35,7 +35,6 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useUser();
   const { plan } = useUserPlan();
-  const { signOut } = useClerk();
 
   const displayName =
     user?.firstName ?? user?.emailAddresses?.[0]?.emailAddress ?? 'Utilisateur';
