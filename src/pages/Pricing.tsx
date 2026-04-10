@@ -54,7 +54,6 @@ export default function Pricing() {
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Que vous soyez agent indépendant ou réseau d&apos;agences, nous avons le plan qu&apos;il vous faut.
-            Commencez avec <strong>3 jours d&apos;essai gratuit</strong> sur le plan Pro.
           </p>
         </div>
       </section>
@@ -98,7 +97,7 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <Link to="/dashboard" className="block">
+                  <Link to={plan.id === 'pro' ? '/checkout?plan=pro' : '/dashboard'} className="block">
                     <Button
                       className={`w-full mt-4 ${
                         plan.highlighted
@@ -127,12 +126,12 @@ export default function Pricing() {
           <div className="space-y-6">
             {[
               {
-                q: 'Puis-je tester gratuitement avant de m\'abonner ?',
-                a: 'Oui ! Tous les plans payants incluent un essai gratuit de 14 jours, sans carte bancaire requise. Le plan Découverte est gratuit à vie avec des fonctionnalités limitées.',
+                q: 'Puis-je tester avant de m\'abonner ?',
+                a: 'Vous pouvez créer un compte et effectuer 1 recherche cadastrale et 1 rapport de risque gratuitement pour évaluer la plateforme.',
               },
               {
-                q: 'Quels territoires sont couverts ?',
-                a: 'Nous couvrons la Guadeloupe, la Martinique, la Guyane, Saint-Martin, Saint-Barthélemy, La Réunion, Mayotte et la France métropolitaine. Le plan Découverte est limité à la métropole.',
+                q: 'Quels territoires sont couverts ?',
+                a: 'Nous couvrons la Guadeloupe, la Martinique, la Guyane, Saint-Martin, Saint-Barthélemy, La Réunion, Mayotte et la France métropolitaine. Tous les territoires sont accessibles dès le plan Pro.',
               },
               {
                 q: 'Puis-je changer de plan à tout moment ?',

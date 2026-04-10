@@ -19,7 +19,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Support prioritaire',
     ],
     highlighted: true,
-    cta: 'Démarrer votre essai gratuit de 3 jours',
+    cta: 'S’abonner au plan Pro',
   },
   {
     id: 'enterprise',

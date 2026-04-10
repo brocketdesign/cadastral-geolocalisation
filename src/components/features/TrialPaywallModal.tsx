@@ -92,7 +92,10 @@ export default function TrialPaywallModal() {
     markAccepted();
     setMainOpen(false);
     setExitOpen(false);
-    navigate('/pricing');
+    // Go directly to checkout with the exclusive 3-day trial flag.
+    // This URL should be wired to your payment provider (e.g. Stripe Checkout
+    // with a trial_period_days=3 price ID that is NOT exposed on the pricing page).
+    navigate('/checkout?plan=pro&trial=3days');
   };
 
   // User clicks X or backdrop on main modal → show exit confirmation
@@ -111,13 +114,15 @@ export default function TrialPaywallModal() {
   };
 
   const handleBackToOffer = () => {
+    // Go straight to checkout — no need to reopen the main popup
+    markAccepted();
     setExitOpen(false);
-    setMainOpen(true);
+    navigate('/checkout?plan=pro&trial=3days');
   };
 
   const handleExitOpenChange = (open: boolean) => {
     if (!open) {
-      // Closing exit dialog without confirming → return to main offer
+      // Backdrop click on exit dialog → treat as "go back to offer"
       handleBackToOffer();
     }
   };
