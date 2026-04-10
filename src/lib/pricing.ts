@@ -2,22 +2,6 @@ import type { PricingPlan } from '@/types';
 
 export const PRICING_PLANS: PricingPlan[] = [
   {
-    id: 'free',
-    name: 'Découverte',
-    price: '0€',
-    period: 'Gratuit',
-    description: 'Pour découvrir la plateforme et faire quelques recherches.',
-    features: [
-      '5 recherches par jour',
-      '1 analyse Foncier Risk Score IA / jour',
-      'France métropolitaine uniquement',
-      'Affichage carte standard',
-      'Coordonnées GPS',
-    ],
-    highlighted: false,
-    cta: 'Commencer gratuitement',
-  },
-  {
     id: 'pro',
     name: 'Pro',
     price: '29€',
@@ -35,7 +19,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Support prioritaire',
     ],
     highlighted: true,
-    cta: 'Démarrer l\'essai gratuit de 14 jours',
+    cta: 'Démarrer votre essai gratuit de 3 jours',
   },
   {
     id: 'enterprise',

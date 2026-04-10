@@ -53,8 +53,8 @@ export default function Pricing() {
             Un plan adapté à chaque besoin
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Que vous soyez agent indépendant ou réseau d'agences, nous avons le plan qu'il vous faut.
-            Essai gratuit de 14 jours sur tous les plans payants.
+            Que vous soyez agent indépendant ou réseau d&apos;agences, nous avons le plan qu&apos;il vous faut.
+            Commencez avec <strong>3 jours d&apos;essai gratuit</strong> sur le plan Pro.
           </p>
         </div>
       </section>
@@ -62,7 +62,7 @@ export default function Pricing() {
       {/* Plans */}
       <section className="pb-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
             {PRICING_PLANS.map((plan) => (
               <Card
                 key={plan.id}

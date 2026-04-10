@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import UpgradeGate from '@/components/features/UpgradeGate';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { toast } from 'sonner';
 import {
@@ -1004,6 +1005,11 @@ export default function ParcelComparison() {
   };
 
   return (
+    <UpgradeGate
+      requiredPlan="pro"
+      featureLabel="La comparaison foncière est réservée au plan Pro. Passez au Pro pour analyser jusqu'à 5 parcelles côte à côte."
+      blurContent
+    >
     <div className="space-y-6 p-1 max-w-full overflow-hidden">
       {/* ── Top Bar ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -1166,5 +1172,6 @@ export default function ParcelComparison() {
         onClose={() => setDetailParcel(null)}
       />
     </div>
+    </UpgradeGate>
   );
 }

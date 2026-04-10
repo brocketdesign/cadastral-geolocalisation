@@ -33,7 +33,7 @@ export default function SearchLimitModal({
             Limite de recherches atteinte
           </DialogTitle>
           <DialogDescription className="text-sm text-slate-500">
-            Vous avez utilisé vos 5 recherches gratuites pour aujourd'hui. Passez
+            Vous avez utilisé votre recherche gratuite du jour. Passez
             au plan Pro pour continuer sans limite.
           </DialogDescription>
         </DialogHeader>

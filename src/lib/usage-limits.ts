@@ -30,7 +30,7 @@ interface PlanLimits {
 
 export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   free: {
-    maxDailySearches: 5,
+    maxDailySearches: 1,
     maxDailyAnalyses: 1,
     canAccessHistory: false,
     canAccessFavorites: false,

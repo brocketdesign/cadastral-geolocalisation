@@ -37,6 +37,7 @@ import { AdTopBanner, AdSidebarCard, AdInline, ImageAdTopBanner, ImageAdSidebar,
 import { useUserPlan } from '@/hooks/use-user-plan';
 import { canSearch, incrementDailySearch, getRemainingSearches } from '@/lib/usage-limits';
 import SearchLimitModal from '@/components/features/SearchLimitModal';
+import TrialPaywallModal from '@/components/features/TrialPaywallModal';
 import { exportParcellePDF } from '@/lib/export-parcelle-pdf';
 
 // Fix for default markers in Leaflet with webpack/vite
@@ -707,6 +708,9 @@ export default function Dashboard() {
 
       {/* Search limit modal for free users */}
       <SearchLimitModal open={limitModalOpen} onOpenChange={setLimitModalOpen} />
+
+      {/* Trial paywall for free users — shown once on dashboard load */}
+      <TrialPaywallModal />
     </div>
   );
 }
