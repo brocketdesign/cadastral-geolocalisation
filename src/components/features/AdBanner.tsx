@@ -3,59 +3,54 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Crown, Zap, TrendingUp, Download, Users, Sparkles } from 'lucide-react';
+import { X, Crown, Zap, TrendingUp, Download, Users, Sparkles, type LucideIcon } from 'lucide-react';
 import { getUserPlan } from '@/lib/storage';
+import { useAdsConfig, type TextAd, type ImageAd as LiveImageAd } from '@/hooks/use-ads-config';
 
 interface AdBannerProps {
   variant?: 'inline' | 'sidebar' | 'banner';
   className?: string;
 }
 
-const ADS = [
+// Map icon name strings (stored in DB) to Lucide components
+const ICON_MAP: Record<string, LucideIcon> = {
+  Crown,
+  Zap,
+  TrendingUp,
+  Download,
+  Users,
+};
+
+const FALLBACK_TEXT_ADS: TextAd[] = [
   {
-    id: 'pro-upgrade',
-    icon: Crown,
+    id: 'pro-upgrade', type: 'text', enabled: true, icon: 'Crown',
     title: 'Passez au plan Pro',
     description: 'Recherches illimitées, export PDF, vue satellite et support prioritaire.',
-    cta: 'Essai gratuit 14 jours',
-    color: 'emerald',
-    link: '/pricing',
+    cta: 'Essai gratuit 14 jours', color: 'emerald', link: '/pricing',
   },
   {
-    id: 'batch-search',
-    icon: Zap,
+    id: 'batch-search', type: 'text', enabled: true, icon: 'Zap',
     title: 'Recherche par lot',
     description: 'Importez un fichier CSV et géolocalisez des centaines de parcelles en un clic.',
-    cta: 'Découvrir le plan Pro',
-    color: 'violet',
-    link: '/pricing',
+    cta: 'Découvrir le plan Pro', color: 'violet', link: '/pricing',
   },
   {
-    id: 'pdf-export',
-    icon: Download,
+    id: 'pdf-export', type: 'text', enabled: true, icon: 'Download',
     title: 'Rapports PDF professionnels',
     description: 'Générez des fiches parcellaires complètes pour vos clients en un clic.',
-    cta: 'Débloquer les exports',
-    color: 'blue',
-    link: '/pricing',
+    cta: 'Débloquer les exports', color: 'blue', link: '/pricing',
   },
   {
-    id: 'enterprise',
-    icon: Users,
+    id: 'enterprise', type: 'text', enabled: true, icon: 'Users',
     title: 'Solution multi-utilisateurs',
-    description: 'Jusqu\'à 10 collaborateurs, API REST, intégration CRM et marque blanche.',
-    cta: 'Découvrir l\'offre Entreprise',
-    color: 'amber',
-    link: '/pricing',
+    description: "Jusqu'à 10 collaborateurs, API REST, intégration CRM et marque blanche.",
+    cta: "Découvrir l'offre Entreprise", color: 'amber', link: '/pricing',
   },
   {
-    id: 'stats',
-    icon: TrendingUp,
+    id: 'stats', type: 'text', enabled: true, icon: 'TrendingUp',
     title: 'Analyses & statistiques',
-    description: 'Suivez l\'évolution des prix, comparez les zones et optimisez vos prospections.',
-    cta: 'Voir les fonctionnalités Pro',
-    color: 'rose',
-    link: '/pricing',
+    description: "Suivez l'évolution des prix, comparez les zones et optimisez vos prospections.",
+    cta: 'Voir les fonctionnalités Pro', color: 'rose', link: '/pricing',
   },
 ];
 
@@ -102,15 +97,19 @@ const colorMap: Record<string, { bg: string; border: string; text: string; badge
   },
 };
 
-function getRandomAd(excludeId?: string) {
-  const candidates = excludeId ? ADS.filter((a) => a.id !== excludeId) : ADS;
+function getRandomTextAd(pool: TextAd[]): TextAd {
+  const enabled = pool.filter((a) => a.enabled);
+  const candidates = enabled.length > 0 ? enabled : pool;
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
 export function AdBanner({ variant = 'inline', className = '' }: AdBannerProps) {
   const [dismissed, setDismissed] = useState(false);
-  const [ad] = useState(() => getRandomAd());
   const [plan, setPlan] = useState<string | null>(null);
+  const { config } = useAdsConfig();
+
+  const pool = config?.textAds?.length ? config.textAds : FALLBACK_TEXT_ADS;
+  const [ad] = useState<TextAd>(() => getRandomTextAd(pool.length ? pool : FALLBACK_TEXT_ADS));
 
   useEffect(() => {
     getUserPlan().then(setPlan);
@@ -120,7 +119,7 @@ export function AdBanner({ variant = 'inline', className = '' }: AdBannerProps) 
   if (plan === null || plan !== 'free' || dismissed) return null;
 
   const colors = colorMap[ad.color] || colorMap.emerald;
-  const Icon = ad.icon;
+  const Icon: LucideIcon = ICON_MAP[ad.icon] ?? Crown;
 
   if (variant === 'banner') {
     return (
@@ -236,64 +235,48 @@ export function AdInline({ className = '' }: { className?: string }) {
 
 // ─── Image-based real estate agency ads ───────────────────────────
 
-interface ImageAd {
-  id: string;
-  src: string;
-  alt: string;
-  href: string;
-  format: 'sidebar' | 'banner' | 'inline';
-}
-
-const IMAGE_ADS: ImageAd[] = [
-  // Sidebar (3:4 vertical)
+const FALLBACK_IMAGE_ADS: LiveImageAd[] = [
   {
-    id: 'img-sidebar-prestige',
+    id: 'img-sidebar-prestige', type: 'image', enabled: true,
     src: '/ads/sidebar-immo-prestige.png',
     alt: 'Prestige Caraïbes Immobilier — Votre partenaire immobilier aux Antilles',
-    href: '#',
-    format: 'sidebar',
+    href: '#', format: 'sidebar',
   },
   {
-    id: 'img-sidebar-terrain',
+    id: 'img-sidebar-terrain', type: 'image', enabled: true,
     src: '/ads/sidebar-terrain-expert.png',
     alt: 'Terrain Expert Antilles — Expertise foncière & géomètre',
-    href: '#',
-    format: 'sidebar',
+    href: '#', format: 'sidebar',
   },
-  // Banner (2:1 horizontal)
   {
-    id: 'img-banner-horizon',
+    id: 'img-banner-horizon', type: 'image', enabled: true,
     src: '/ads/banner-horizon-immo.png',
     alt: 'Horizon Immobilier DOM-TOM — Plus de 500 biens disponibles en Outre-mer',
-    href: '#',
-    format: 'banner',
+    href: '#', format: 'banner',
   },
   {
-    id: 'img-banner-invest',
+    id: 'img-banner-invest', type: 'image', enabled: true,
     src: '/ads/banner-invest-caraibes.png',
-    alt: 'Invest Caraïbes — Investissez dans l\'immobilier antillais',
-    href: '#',
-    format: 'banner',
+    alt: "Invest Caraïbes — Investissez dans l'immobilier antillais",
+    href: '#', format: 'banner',
   },
-  // Inline (16:9)
   {
-    id: 'img-inline-soleil',
+    id: 'img-inline-soleil', type: 'image', enabled: true,
     src: '/ads/inline-agence-soleil.png',
     alt: 'Agence Soleil Immobilier — Trouvez votre bien de rêve aux Antilles',
-    href: '#',
-    format: 'inline',
+    href: '#', format: 'inline',
   },
   {
-    id: 'img-inline-neuf',
+    id: 'img-inline-neuf', type: 'image', enabled: true,
     src: '/ads/inline-neuf-outremer.png',
     alt: 'Outre-Mer Neuf — Programmes neufs en Guadeloupe, Martinique, Guyane',
-    href: '#',
-    format: 'inline',
+    href: '#', format: 'inline',
   },
 ];
 
-function getRandomImageAd(format: ImageAd['format']) {
-  const candidates = IMAGE_ADS.filter((a) => a.format === format);
+function getRandomImageAd(pool: LiveImageAd[], format: LiveImageAd['format']): LiveImageAd | null {
+  const candidates = pool.filter((a) => a.format === format && a.enabled);
+  if (!candidates.length) return null;
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
@@ -301,12 +284,18 @@ function ImageAdWrapper({
   format,
   className = '',
 }: {
-  format: ImageAd['format'];
+  format: LiveImageAd['format'];
   className?: string;
 }) {
   const [dismissed, setDismissed] = useState(false);
-  const [ad] = useState(() => getRandomImageAd(format));
   const [plan, setPlan] = useState<string | null>(null);
+  const { config } = useAdsConfig();
+
+  const pool = config?.imageAds?.length ? config.imageAds : FALLBACK_IMAGE_ADS;
+  const [ad] = useState<LiveImageAd | null>(() => getRandomImageAd(
+    pool.length ? pool : FALLBACK_IMAGE_ADS,
+    format
+  ));
 
   useEffect(() => {
     getUserPlan().then(setPlan);

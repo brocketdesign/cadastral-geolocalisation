@@ -6,8 +6,6 @@ import { useUserPlan } from '@/hooks/use-user-plan';
 import type { PlanType } from '@/types';
 import { toast } from 'sonner';
 
-const ADMIN_EMAILS = ['nahomaho191@gmail.com'];
-
 const PLAN_OPTIONS: { value: PlanType; label: string; icon: string }[] = [
   { value: 'free', label: 'Découverte (Gratuit)', icon: '🆓' },
   { value: 'pro', label: 'Pro', icon: '⭐' },
@@ -16,13 +14,12 @@ const PLAN_OPTIONS: { value: PlanType; label: string; icon: string }[] = [
 
 export default function AdminPanel() {
   const { user } = useUser();
-  const { plan } = useUserPlan();
+  const { plan, isAdmin } = useUserPlan();
   const [isOpen, setIsOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
 
   // Only show for admin users
-  const email = user?.emailAddresses?.[0]?.emailAddress;
-  if (!email || !ADMIN_EMAILS.includes(email)) return null;
+  if (!isAdmin) return null;
 
   const handlePlanChange = async (newPlan: PlanType) => {
     if (newPlan === plan) {
@@ -32,6 +29,7 @@ export default function AdminPanel() {
 
     setUpdating(true);
     try {
+      const email = user?.emailAddresses?.[0]?.emailAddress;
       const res = await fetch('/api/admin/update-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,7 +99,7 @@ export default function AdminPanel() {
             {/* User info */}
             <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
               <p className="text-xs text-slate-500">Connecté en tant que</p>
-              <p className="text-sm font-medium text-slate-900 truncate">{email}</p>
+              <p className="text-sm font-medium text-slate-900 truncate">{user?.emailAddresses?.[0]?.emailAddress}</p>
               <div className="flex items-center gap-1.5 mt-1">
                 <Crown className="w-3 h-3 text-amber-500" />
                 <span className="text-xs font-medium text-amber-600">

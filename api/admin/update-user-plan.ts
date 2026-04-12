@@ -2,14 +2,12 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { connectToDatabase } from '../lib/mongodb.js';
 
 /**
- * POST /api/admin/update-plan
- * Body: { email: string, userId: string, plan: 'free' | 'pro' | 'enterprise' }
+ * POST /api/admin/update-user-plan
+ * Body: { adminUserId: string, targetUserId: string, plan: 'free' | 'pro' | 'enterprise' }
  *
- * Updates the user plan in both MongoDB and Clerk publicMetadata.
- * Only accessible by users with isAdmin: true in the user_plans collection.
+ * Admin updates another user's plan in MongoDB and Clerk publicMetadata.
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -18,72 +16,63 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { email, userId, plan } = req.body;
+    const { adminUserId, targetUserId, plan } = req.body;
 
-    if (!userId) {
-      return res.status(400).json({ error: 'userId requis.' });
+    if (!adminUserId || !targetUserId) {
+      return res.status(400).json({ error: 'adminUserId et targetUserId requis.' });
     }
-
-    // Validate plan
     if (!plan || !['free', 'pro', 'enterprise'].includes(plan)) {
       return res.status(400).json({ error: 'Plan invalide. Doit être free, pro ou enterprise.' });
     }
 
-    // 1) Connect to DB and verify admin via isAdmin field
     const { db } = await connectToDatabase();
 
-    const requester = await db.collection('user_plans').findOne({ clerkUserId: userId });
+    // Verify admin
+    const requester = await db.collection('user_plans').findOne({ clerkUserId: adminUserId });
     if (!requester?.isAdmin) {
       return res.status(403).json({ error: 'Accès refusé. Vous n\'êtes pas administrateur.' });
     }
 
-    // 2) Update MongoDB
-    await db.collection('settings').updateOne(
-      { key: 'user_plan' },
-      { $set: { key: 'user_plan', value: plan } },
-      { upsert: true }
-    );
-
-    // Store per-user plan (preserve isAdmin flag)
+    // Update target user's plan in MongoDB (preserve their isAdmin flag)
+    const target = await db.collection('user_plans').findOne({ clerkUserId: targetUserId });
     await db.collection('user_plans').updateOne(
-      { clerkUserId: userId },
-      { $set: { clerkUserId: userId, email, plan, updatedAt: new Date() } },
+      { clerkUserId: targetUserId },
+      {
+        $set: {
+          plan,
+          updatedAt: new Date(),
+          isAdmin: target?.isAdmin ?? false,
+        },
+      },
       { upsert: true }
     );
 
-    // 3) Update Clerk publicMetadata via REST API (preserve isAdmin)
+    // Update Clerk publicMetadata for the target user
     const clerkSecretKey = process.env.CLERK_SECRET_KEY;
     if (clerkSecretKey) {
-      const clerkRes = await fetch(`https://api.clerk.com/v1/users/${userId}`, {
+      const clerkRes = await fetch(`https://api.clerk.com/v1/users/${targetUserId}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${clerkSecretKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          public_metadata: { plan, isAdmin: requester.isAdmin ?? false },
+          public_metadata: { plan, isAdmin: target?.isAdmin ?? false },
         }),
       });
 
       if (!clerkRes.ok) {
         const errBody = await clerkRes.text();
         console.error('Clerk API error:', clerkRes.status, errBody);
-        return res.status(500).json({
-          error: 'Erreur lors de la mise à jour Clerk.',
-          details: errBody,
-        });
+        return res.status(500).json({ error: 'Erreur lors de la mise à jour Clerk.', details: errBody });
       }
     } else {
       console.warn('CLERK_SECRET_KEY not set – skipping Clerk metadata update');
     }
 
-    return res.status(200).json({
-      success: true,
-      plan,
-      message: `Plan mis à jour : ${plan}`,
-    });
+    return res.status(200).json({ success: true, plan, targetUserId });
   } catch (error) {
-    console.error('Admin update-plan error:', error);
+    console.error('Admin update-user-plan error:', error);
     return res.status(500).json({ error: 'Erreur serveur interne.' });
   }
 }

@@ -8,6 +8,8 @@ import RiskAnalysis from '@/pages/RiskAnalysis';
 import ParcelComparison from '@/pages/ParcelComparison';
 import AlertSettings from '@/pages/AlertSettings';
 import AccountSettings from '@/pages/AccountSettings';
+import UserManagement from '@/pages/admin/UserManagement';
+import AdManagement from '@/pages/admin/AdManagement';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import RequireAuth from '@/components/features/RequireAuth';
 
@@ -86,6 +88,26 @@ function App() {
             <RequireAuth>
               <DashboardLayout>
                 <AccountSettings />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <UserManagement />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/ads"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <AdManagement />
               </DashboardLayout>
             </RequireAuth>
           }

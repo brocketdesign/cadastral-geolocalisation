@@ -13,6 +13,8 @@ import {
   Shield,
   BellRing,
   TrendingUp,
+  Users,
+  Megaphone,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useUserPlan } from '@/hooks/use-user-plan';
@@ -36,7 +38,7 @@ export default function DashboardLayout({
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useUser();
-  const { plan } = useUserPlan();
+  const { plan, isAdmin } = useUserPlan();
 
   const displayName =
     user?.firstName ?? user?.emailAddresses?.[0]?.emailAddress ?? 'Utilisateur';
@@ -129,6 +131,40 @@ export default function DashboardLayout({
             <Settings className="w-4 h-4" />
             Paramètres
           </Link>
+
+          {isAdmin && (
+            <>
+              <div className="px-3 mt-6 mb-2">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+                  Administration
+                </p>
+              </div>
+              <Link
+                to="/admin/users"
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
+                  location.pathname === '/admin/users'
+                    ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                Utilisateurs
+              </Link>
+              <Link
+                to="/admin/ads"
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
+                  location.pathname === '/admin/ads'
+                    ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Megaphone className="w-4 h-4" />
+                Publicités
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* User info via Clerk UserButton */}
