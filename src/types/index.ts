@@ -146,3 +146,29 @@ export type ComparisonWinnerKey =
   | 'meilleureConstruction'
   | 'moinsDeRisques'
   | 'scoreGlobal';
+
+/* ─── Agency & Client (Reports) ─── */
+
+export interface Agency {
+  _id?: string;
+  user_id: string;
+  name: string;
+  address: string;
+  phone: string;
+  logo_url?: string;
+  is_default: boolean;
+}
+
+export interface Client {
+  _id?: string;
+  user_id: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  notes?: string;
+}
+
+export interface ReportConfig {
+  agency: Agency | null;
+  client: Client | null;
+}

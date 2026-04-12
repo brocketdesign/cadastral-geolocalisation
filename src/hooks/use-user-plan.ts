@@ -1,28 +1,46 @@
 /**
- * React hook that provides the current user's plan type.
+ * React hook that provides the current user's plan type and admin status.
  *
- * When logged in via Clerk the plan is read from user public metadata
- * (`plan` field). For anonymous visitors the plan always falls back to "free".
+ * The plan and isAdmin flag are fetched from MongoDB via /api/users/me
+ * so they are always in sync with the server-side source of truth.
  */
 
+import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import type { PlanType } from '@/types';
 
 export function useUserPlan(): { plan: PlanType; isAdmin: boolean; isLoaded: boolean } {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded: clerkLoaded } = useUser();
+  const [plan, setPlan] = useState<PlanType>('free');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  if (!isLoaded) return { plan: 'free', isAdmin: false, isLoaded: false };
+  useEffect(() => {
+    if (!clerkLoaded) return;
 
-  if (!user) return { plan: 'free', isAdmin: false, isLoaded: true };
+    if (!user) {
+      setPlan('free');
+      setIsAdmin(false);
+      setIsLoaded(true);
+      return;
+    }
 
-  // Clerk publicMetadata is set server-side (e.g. via webhook after payment).
-  const meta = user.publicMetadata as { plan?: string; isAdmin?: boolean } | undefined;
-  const plan = meta?.plan;
-  const isAdmin = meta?.isAdmin === true;
+    fetch(`/api/users/me?userId=${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const p = data.plan;
+        setPlan(p === 'pro' || p === 'enterprise' ? p : 'free');
+        setIsAdmin(data.isAdmin === true);
+      })
+      .catch(() => {
+        // Fallback to Clerk publicMetadata if the API is unreachable
+        const meta = user.publicMetadata as { plan?: string; isAdmin?: boolean } | undefined;
+        const p = meta?.plan;
+        setPlan(p === 'pro' || p === 'enterprise' ? p : 'free');
+        setIsAdmin(meta?.isAdmin === true);
+      })
+      .finally(() => setIsLoaded(true));
+  }, [clerkLoaded, user]);
 
-  if (plan === 'pro' || plan === 'enterprise') {
-    return { plan, isAdmin, isLoaded: true };
-  }
-
-  return { plan: 'free', isAdmin, isLoaded: true };
+  return { plan, isAdmin, isLoaded };
 }

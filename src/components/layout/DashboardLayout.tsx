@@ -15,20 +15,31 @@ import {
   TrendingUp,
   Users,
   Megaphone,
+  FileText,
+  Building2,
+  UserRound,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useUserPlan } from '@/hooks/use-user-plan';
 import UpgradePromptBanner from '@/components/features/UpgradePromptBanner';
 import AdminPanel from '@/components/features/AdminPanel';
 
-const NAV_ITEMS = [
-  { to: '/dashboard', icon: Search, label: 'Recherche' },
-  { to: '/risk-analysis', icon: Shield, label: 'Risk Score IA' },
-  { to: '/comparison', icon: TrendingUp, label: 'Comparaison' },
-  { to: '/alerts', icon: BellRing, label: 'Alertes Pro' },
+/* ─── Nav sections ──────────────────────────────────────────── */
+
+const SEARCH_ITEMS = [
+  { to: '/dashboard', icon: Search, label: 'Recherche cadastrale' },
   { to: '/history', icon: History, label: 'Historique' },
   { to: '/favorites', icon: Star, label: 'Favoris' },
 ];
+
+const ANALYSIS_ITEMS = [
+  { to: '/risk-analysis', icon: Shield, label: 'Risk Score IA' },
+  { to: '/comparison', icon: TrendingUp, label: 'Comparaison' },
+  { to: '/alerts', icon: BellRing, label: 'Alertes Pro' },
+];
+
+
+
 
 export default function DashboardLayout({
   children,
@@ -81,12 +92,14 @@ export default function DashboardLayout({
         </div>
 
         <nav className="flex-1 py-4 overflow-y-auto">
-          <div className="px-3 mb-2">
+
+          {/* ── Recherche ── */}
+          <div className="px-3 mb-1.5">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
-              Navigation
+              Recherche
             </p>
           </div>
-          {NAV_ITEMS.map((item) => {
+          {SEARCH_ITEMS.map((item) => {
             const isActive = location.pathname === item.to;
             return (
               <Link
@@ -105,7 +118,77 @@ export default function DashboardLayout({
             );
           })}
 
-          <div className="px-3 mt-6 mb-2">
+          {/* ── Analyse & Veille ── */}
+          <div className="px-3 mt-5 mb-1.5">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+              Analyse & Veille
+            </p>
+          </div>
+          {ANALYSIS_ITEMS.map((item) => {
+            const isActive = location.pathname === item.to;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
+                  isActive
+                    ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </Link>
+            );
+          })}
+
+          {/* ── Rapports ── */}
+          <div className="px-3 mt-5 mb-1.5">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+              Rapports
+            </p>
+          </div>
+          {/* "Générer un rapport" redirects to dashboard */}
+          <Link
+            to="/dashboard"
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
+              location.pathname === '/dashboard'
+                ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            Générer un rapport
+          </Link>
+          <Link
+            to="/settings/agencies"
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
+              location.pathname === '/settings/agencies'
+                ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <Building2 className="w-4 h-4" />
+            Mes agences
+          </Link>
+          <Link
+            to="/clients"
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
+              location.pathname === '/clients'
+                ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <UserRound className="w-4 h-4" />
+            Mes clients
+          </Link>
+
+          {/* ── Compte ── */}
+          <div className="px-3 mt-5 mb-1.5">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
               Compte
             </p>
@@ -136,7 +219,7 @@ export default function DashboardLayout({
             <>
               <div className="px-3 mt-6 mb-2">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
-                  Administration
+                  Administrateur
                 </p>
               </div>
               <Link

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -67,6 +67,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { ComparisonParcel } from '@/types';
 import { CARIBBEAN_TERRITORIES } from '@/lib/territories';
+import { getStoredParcels, storeParcels } from '@/lib/comparison-store';
 
 // ─── Leaflet default icon fix ────────────────────────────────────────────────
 const DefaultIcon = L.icon({
@@ -76,76 +77,6 @@ const DefaultIcon = L.icon({
   iconAnchor: [10, 33],
 });
 L.Marker.prototype.options.icon = DefaultIcon;
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-const MOCK_PARCELS: ComparisonParcel[] = [
-  {
-    id: '1',
-    ref: '971-0100-A-0023',
-    territoire: '971',
-    commune: 'Basse-Terre',
-    section: 'A',
-    numero: '0023',
-    lat: 15.9996,
-    lng: -61.7246,
-    surface: 1200,
-    surfaceConstructible: 840,
-    prix: 102000,
-    zonage: 'U',
-    riskScore: 15,
-    scoreGlobal: 92,
-    cos: '0.30',
-    potentielSHON: 360,
-    prixMoyenM2Marche: 90,
-    tendanceMarche: 'HAUSSE',
-    servitudes: [],
-    addedAt: Date.now() - 3600000,
-  },
-  {
-    id: '2',
-    ref: '971-0234-B-0108',
-    territoire: '971',
-    commune: 'Pointe-à-Pitre',
-    section: 'B',
-    numero: '0108',
-    lat: 16.2412,
-    lng: -61.5334,
-    surface: 800,
-    surfaceConstructible: 480,
-    prix: 96000,
-    zonage: 'AU',
-    riskScore: 45,
-    scoreGlobal: 78,
-    cos: '0.25',
-    potentielSHON: 200,
-    prixMoyenM2Marche: 130,
-    tendanceMarche: 'STABLE',
-    servitudes: ['Servitude EDF', 'RNU'],
-    addedAt: Date.now() - 7200000,
-  },
-  {
-    id: '3',
-    ref: '972-0056-C-0045',
-    territoire: '972',
-    commune: 'Le Lamentin',
-    section: 'C',
-    numero: '0045',
-    lat: 14.614,
-    lng: -61.0,
-    surface: 1500,
-    surfaceConstructible: 1050,
-    prix: 105000,
-    zonage: 'U',
-    riskScore: 20,
-    scoreGlobal: 88,
-    cos: '0.35',
-    potentielSHON: 525,
-    prixMoyenM2Marche: 75,
-    tendanceMarche: 'HAUSSE',
-    servitudes: ['Loi Littoral'],
-    addedAt: Date.now() - 10800000,
-  },
-];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmtEuro = (n: number) =>
@@ -949,13 +880,18 @@ function WinnerLegend({ winners, parcels }: { winners: WinnerMap; parcels: Compa
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ParcelComparison() {
-  const [parcels, setParcels] = useState<ComparisonParcel[]>(MOCK_PARCELS);
+  const [parcels, setParcels] = useState<ComparisonParcel[]>(() => getStoredParcels());
   const [addOpen, setAddOpen] = useState(false);
   const [tableExpanded, setTableExpanded] = useState(false);
   const [detailParcel, setDetailParcel] = useState<ComparisonParcel | null>(null);
   const [shareLoading, setShareLoading] = useState(false);
 
   const winners = useMemo(() => computeWinners(parcels), [parcels]);
+
+  // Persist to localStorage on every change
+  useEffect(() => {
+    storeParcels(parcels);
+  }, [parcels]);
 
   const handleRemove = useCallback((id: string) => {
     setParcels((prev) => prev.filter((p) => p.id !== id));

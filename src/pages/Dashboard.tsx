@@ -27,6 +27,8 @@ import {
   History,
   Share2,
   Shield,
+  TrendingUp,
+  FileText,
 } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -39,6 +41,9 @@ import { canSearch, incrementDailySearch, getRemainingSearches } from '@/lib/usa
 import SearchLimitModal from '@/components/features/SearchLimitModal';
 import TrialPaywallModal from '@/components/features/TrialPaywallModal';
 import { exportParcellePDF } from '@/lib/export-parcelle-pdf';
+import ReportPanel from '@/components/features/ReportPanel';
+import { addParcelToStore, historyItemToComparisonParcel, getStoredParcelCount } from '@/lib/comparison-store';
+import { toast } from 'sonner';
 
 // Fix for default markers in Leaflet with webpack/vite
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -68,7 +73,9 @@ export default function Dashboard() {
   const [mapKey, setMapKey] = useState(0);
   const [copied, setCopied] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [reportPanelOpen, setReportPanelOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([]);
+  const [latestHistoryItem, setLatestHistoryItem] = useState<SearchHistoryItem | null>(null);
 
   // Load recent searches from API on mount
   useEffect(() => {
@@ -215,6 +222,7 @@ export default function Dashboard() {
         result: newResult,
       });
       setRecentSearches((prev) => [historyItem, ...prev].slice(0, 5));
+      setLatestHistoryItem(historyItem);
     } catch (err) {
       console.error('Cadastral search error:', err);
       setError('Erreur lors de la recherche. Veuillez réessayer.');
@@ -655,6 +663,34 @@ export default function Dashboard() {
                     </Button>
 
                     <Button
+                      variant="outline"
+                      className="w-full justify-start text-emerald-700 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-400"
+                      onClick={() => {
+                        if (getStoredParcelCount() >= 5) {
+                          toast.error('Limite atteinte. Retirez une parcelle de la comparaison avant d\'en ajouter une nouvelle.');
+                          return;
+                        }
+                        if (latestHistoryItem) {
+                          const parcel = historyItemToComparisonParcel(latestHistoryItem);
+                          const added = addParcelToStore(parcel);
+                          if (added) {
+                            toast.success('Parcelle ajoutée à la comparaison', {
+                              action: { label: 'Voir', onClick: () => navigate('/comparison') },
+                            });
+                          } else {
+                            toast.info('Cette parcelle est déjà dans la comparaison', {
+                              action: { label: 'Voir', onClick: () => navigate('/comparison') },
+                            });
+                          }
+                        }
+                      }}
+                      disabled={!latestHistoryItem}
+                    >
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Ajouter à la comparaison
+                    </Button>
+
+                    <Button
                       className="w-full justify-start bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
                       onClick={() => {
                         const params = new URLSearchParams({
@@ -698,6 +734,14 @@ export default function Dashboard() {
                       )}
                       {pdfLoading ? 'Génération...' : 'Exporter en PDF'}
                     </Button>
+
+                    <Button
+                      className="w-full justify-start bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white"
+                      onClick={() => setReportPanelOpen(true)}
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      Générer un rapport
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -711,6 +755,15 @@ export default function Dashboard() {
 
       {/* Trial paywall for free users — shown once on dashboard load */}
       <TrialPaywallModal />
+
+      {/* Report panel — opens when result is available */}
+      {result && (
+        <ReportPanel
+          open={reportPanelOpen}
+          onOpenChange={setReportPanelOpen}
+          result={result}
+        />
+      )}
     </div>
   );
 }

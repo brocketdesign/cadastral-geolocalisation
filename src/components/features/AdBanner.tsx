@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Crown, Zap, TrendingUp, Download, Users, Sparkles, type LucideIcon } from 'lucide-react';
-import { getUserPlan } from '@/lib/storage';
 import { useAdsConfig, type TextAd, type ImageAd as LiveImageAd } from '@/hooks/use-ads-config';
+import { useUserPlan } from '@/hooks/use-user-plan';
 
 interface AdBannerProps {
   variant?: 'inline' | 'sidebar' | 'banner';
@@ -105,18 +105,14 @@ function getRandomTextAd(pool: TextAd[]): TextAd {
 
 export function AdBanner({ variant = 'inline', className = '' }: AdBannerProps) {
   const [dismissed, setDismissed] = useState(false);
-  const [plan, setPlan] = useState<string | null>(null);
+  const { plan, isAdmin, isLoaded } = useUserPlan();
   const { config } = useAdsConfig();
 
   const pool = config?.textAds?.length ? config.textAds : FALLBACK_TEXT_ADS;
   const [ad] = useState<TextAd>(() => getRandomTextAd(pool.length ? pool : FALLBACK_TEXT_ADS));
 
-  useEffect(() => {
-    getUserPlan().then(setPlan);
-  }, []);
-
-  // Don't show ads until plan is known, or to paying users
-  if (plan === null || plan !== 'free' || dismissed) return null;
+  // Don't show ads until plan is known, to paying users, or to admins
+  if (!isLoaded || plan !== 'free' || isAdmin || dismissed) return null;
 
   const colors = colorMap[ad.color] || colorMap.emerald;
   const Icon: LucideIcon = ICON_MAP[ad.icon] ?? Crown;
@@ -288,7 +284,7 @@ function ImageAdWrapper({
   className?: string;
 }) {
   const [dismissed, setDismissed] = useState(false);
-  const [plan, setPlan] = useState<string | null>(null);
+  const { plan, isAdmin, isLoaded } = useUserPlan();
   const { config } = useAdsConfig();
 
   const pool = config?.imageAds?.length ? config.imageAds : FALLBACK_IMAGE_ADS;
@@ -297,11 +293,7 @@ function ImageAdWrapper({
     format
   ));
 
-  useEffect(() => {
-    getUserPlan().then(setPlan);
-  }, []);
-
-  if (plan === null || plan !== 'free' || dismissed || !ad) return null;
+  if (!isLoaded || plan !== 'free' || isAdmin || dismissed || !ad) return null;
 
   return (
     <div className={`relative group rounded-lg overflow-hidden border border-slate-200 shadow-sm ${className}`}>

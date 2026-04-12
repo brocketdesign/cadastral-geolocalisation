@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, MapPin, Calendar } from 'lucide-react';
+import { Star, MapPin, Calendar, TrendingUp } from 'lucide-react';
+import { toast } from 'sonner';
 import type { SearchHistoryItem } from '@/types';
 import { getFavorites, toggleFavorite } from '@/lib/storage';
+import { addParcelToStore, historyItemToComparisonParcel, getStoredParcelCount } from '@/lib/comparison-store';
 import UpgradeGate from '@/components/features/UpgradeGate';
 
 export default function Favorites() {
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState<SearchHistoryItem[]>([]);
 
   useEffect(() => {
@@ -17,6 +21,24 @@ export default function Favorites() {
     await toggleFavorite(id);
     const updated = await getFavorites();
     setFavorites(updated);
+  };
+
+  const handleAddToComparison = (item: SearchHistoryItem) => {
+    if (getStoredParcelCount() >= 5) {
+      toast.error('Limite atteinte. Retirez une parcelle de la comparaison avant d\'en ajouter une nouvelle.');
+      return;
+    }
+    const parcel = historyItemToComparisonParcel(item);
+    const added = addParcelToStore(parcel);
+    if (added) {
+      toast.success('Parcelle ajoutée à la comparaison', {
+        action: { label: 'Voir', onClick: () => navigate('/comparison') },
+      });
+    } else {
+      toast.info('Cette parcelle est déjà dans la comparaison', {
+        action: { label: 'Voir', onClick: () => navigate('/comparison') },
+      });
+    }
   };
 
   return (
@@ -62,13 +84,22 @@ export default function Favorites() {
                       </span>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleRemoveFavorite(item.id)}
-                    className="p-2 rounded-md hover:bg-red-50 transition-colors shrink-0"
-                    title="Retirer des favoris"
-                  >
-                    <Star className="w-4 h-4 text-amber-400 fill-amber-400 hover:text-red-400" />
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => handleAddToComparison(item)}
+                      className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
+                      title="Ajouter à la comparaison"
+                    >
+                      <TrendingUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleRemoveFavorite(item.id)}
+                      className="p-2 rounded-md hover:bg-red-50 transition-colors"
+                      title="Retirer des favoris"
+                    >
+                      <Star className="w-4 h-4 text-amber-400 fill-amber-400 hover:text-red-400" />
+                    </button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

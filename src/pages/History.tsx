@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,12 +12,16 @@ import {
   MapPin,
   Calendar,
   AlertTriangle,
+  TrendingUp,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { SearchHistoryItem } from '@/types';
 import { getSearchHistory, toggleFavorite, removeFromHistory, clearHistory } from '@/lib/storage';
+import { addParcelToStore, historyItemToComparisonParcel, getStoredParcelCount } from '@/lib/comparison-store';
 import UpgradeGate from '@/components/features/UpgradeGate';
 
 export default function HistoryPage() {
+  const navigate = useNavigate();
   const [history, setHistory] = useState<SearchHistoryItem[]>([]);
   const [filter, setFilter] = useState('');
 
@@ -43,6 +48,24 @@ export default function HistoryPage() {
     if (window.confirm('Voulez-vous vraiment supprimer tout l\'historique ?')) {
       await clearHistory();
       await refreshHistory();
+    }
+  };
+
+  const handleAddToComparison = (item: SearchHistoryItem) => {
+    if (getStoredParcelCount() >= 5) {
+      toast.error('Limite atteinte. Retirez une parcelle de la comparaison avant d\'en ajouter une nouvelle.');
+      return;
+    }
+    const parcel = historyItemToComparisonParcel(item);
+    const added = addParcelToStore(parcel);
+    if (added) {
+      toast.success('Parcelle ajoutée à la comparaison', {
+        action: { label: 'Voir', onClick: () => navigate('/comparison') },
+      });
+    } else {
+      toast.info('Cette parcelle est déjà dans la comparaison', {
+        action: { label: 'Voir', onClick: () => navigate('/comparison') },
+      });
     }
   };
 
@@ -123,6 +146,13 @@ export default function HistoryPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => handleAddToComparison(item)}
+                      className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
+                      title="Ajouter à la comparaison"
+                    >
+                      <TrendingUp className="w-4 h-4" />
+                    </button>
                     <button
                       onClick={() => handleToggleFavorite(item.id)}
                       className="p-2 rounded-md hover:bg-slate-100 transition-colors"

@@ -95,9 +95,20 @@ export default function AlertSettings() {
     >
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            Alertes Foncier Pro
-          </h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl font-bold text-slate-900">
+              Alertes Foncier Pro
+            </h1>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                En développement
+              </span>
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-violet-100 text-violet-700 border border-violet-200">
+                Accès prioritaire Pro
+              </span>
+            </div>
+          </div>
           <p className="text-slate-500 text-sm mt-1">
             Recevez des alertes en temps réel par SMS, email et notifications
             push sur vos zones de prospection foncière.

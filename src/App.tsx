@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import Landing from '@/pages/Landing';
 import Pricing from '@/pages/Pricing';
 import Dashboard from '@/pages/Dashboard';
@@ -8,6 +9,8 @@ import RiskAnalysis from '@/pages/RiskAnalysis';
 import ParcelComparison from '@/pages/ParcelComparison';
 import AlertSettings from '@/pages/AlertSettings';
 import AccountSettings from '@/pages/AccountSettings';
+import AgencySettings from '@/pages/settings/AgencySettings';
+import ClientsPage from '@/pages/Clients';
 import UserManagement from '@/pages/admin/UserManagement';
 import AdManagement from '@/pages/admin/AdManagement';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -16,6 +19,7 @@ import RequireAuth from '@/components/features/RequireAuth';
 function App() {
   return (
     <BrowserRouter>
+      <Toaster richColors position="top-right" />
       <Routes>
         {/* Public pages */}
         <Route path="/" element={<Landing />} />
@@ -88,6 +92,26 @@ function App() {
             <RequireAuth>
               <DashboardLayout>
                 <AccountSettings />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/settings/agencies"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <AgencySettings />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/clients"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <ClientsPage />
               </DashboardLayout>
             </RequireAuth>
           }
