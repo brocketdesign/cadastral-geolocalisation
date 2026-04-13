@@ -1,12 +1,51 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { MapPin, CheckCircle2, ArrowLeft, Loader2 } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/pricing';
+import { toast } from 'sonner';
 
 export default function Pricing() {
+  const { user } = useUser();
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+
+  async function handleProCheckout() {
+    if (!user) {
+      toast.error('Vous devez être connecté pour vous abonner.');
+      return;
+    }
+
+    setLoadingPlanId('pro');
+    try {
+      const origin = window.location.origin;
+      const successUrl = `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&plan=pro`;
+      const cancelUrl = `${origin}/pricing`;
+
+      const res = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          plan: 'pro',
+          trial: false,
+          successUrl,
+          cancelUrl,
+        }),
+      });
+
+      const data = await res.json() as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error ?? 'Erreur checkout');
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      toast.error('Impossible de démarrer le checkout. Veuillez réessayer.');
+      setLoadingPlanId(null);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
       {/* Navigation */}
@@ -97,8 +136,10 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <Link to={plan.id === 'pro' ? '/checkout?plan=pro' : '/dashboard'} className="block">
+                  <Link to={plan.id === 'pro' ? '#' : '/dashboard'} className="block">
                     <Button
+                      onClick={plan.id === 'pro' ? handleProCheckout : undefined}
+                      disabled={loadingPlanId === plan.id}
                       className={`w-full mt-4 ${
                         plan.highlighted
                           ? 'bg-emerald-600 hover:bg-emerald-700'
@@ -107,7 +148,11 @@ export default function Pricing() {
                       variant={plan.highlighted ? 'default' : 'outline'}
                       size="lg"
                     >
-                      {plan.cta}
+                      {loadingPlanId === plan.id ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Chargement…</>
+                      ) : (
+                        plan.cta
+                      )}
                     </Button>
                   </Link>
                 </CardContent>

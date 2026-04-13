@@ -13,6 +13,7 @@ import AgencySettings from '@/pages/settings/AgencySettings';
 import ClientsPage from '@/pages/Clients';
 import UserManagement from '@/pages/admin/UserManagement';
 import AdManagement from '@/pages/admin/AdManagement';
+import CheckoutSuccess from '@/pages/CheckoutSuccess';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import RequireAuth from '@/components/features/RequireAuth';
 
@@ -136,6 +137,8 @@ function App() {
             </RequireAuth>
           }
         />
+        {/* Stripe checkout success — public, no layout needed */}
+        <Route path="/checkout/success" element={<CheckoutSuccess />} />
       </Routes>
     </BrowserRouter>
   );

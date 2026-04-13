@@ -16,7 +16,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useUser } from '@clerk/clerk-react';
 import {
   Dialog,
   DialogContent,
@@ -33,8 +33,10 @@ import {
   AlertTriangle,
   ArrowRight,
   Clock,
+  Loader2,
 } from 'lucide-react';
 import { useUserPlan } from '@/hooks/use-user-plan';
+import { toast } from 'sonner';
 
 const DISMISSED_KEY = 'cadastral_trial_dismissed';
 const ACCEPTED_KEY = 'cadastral_trial_accepted';
@@ -70,10 +72,11 @@ function markAccepted() {
 
 export default function TrialPaywallModal() {
   const { plan, isLoaded } = useUserPlan();
-  const navigate = useNavigate();
+  const { user } = useUser();
 
   const [mainOpen, setMainOpen] = useState(false);
   const [exitOpen, setExitOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Open the paywall once Clerk is loaded and user is on free plan
   useEffect(() => {
@@ -86,22 +89,55 @@ export default function TrialPaywallModal() {
     return () => clearTimeout(timer);
   }, [isLoaded, plan]);
 
+  /* ── Stripe checkout helper ─────────────────── */
+
+  async function redirectToTrialCheckout() {
+    if (!user) return;
+    setLoading(true);
+
+    try {
+      const origin = window.location.origin;
+      const successUrl = `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&plan=pro&trial=true`;
+      const cancelUrl = `${origin}/dashboard`;
+
+      const res = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          plan: 'pro',
+          trial: true,
+          successUrl,
+          cancelUrl,
+        }),
+      });
+
+      const data = await res.json() as { url?: string; error?: string };
+
+      if (!res.ok || !data.url) {
+        throw new Error(data.error ?? 'Erreur lors de la création du checkout.');
+      }
+
+      markAccepted();
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      toast.error('Impossible de démarrer le checkout. Veuillez réessayer.');
+      setLoading(false);
+    }
+  }
+
   /* ── Handlers ────────────────────────────────── */
 
   const handleStartTrial = () => {
-    markAccepted();
     setMainOpen(false);
     setExitOpen(false);
-    // Go directly to checkout with the exclusive 3-day trial flag.
-    // This URL should be wired to your payment provider (e.g. Stripe Checkout
-    // with a trial_period_days=3 price ID that is NOT exposed on the pricing page).
-    navigate('/checkout?plan=pro&trial=3days');
+    redirectToTrialCheckout();
   };
 
   // User clicks X or backdrop on main modal → show exit confirmation
   const handleMainOpenChange = (open: boolean) => {
     if (!open && mainOpen) {
-      // Intercept close → show exit intent instead
       setExitOpen(true);
       return;
     }
@@ -114,10 +150,8 @@ export default function TrialPaywallModal() {
   };
 
   const handleBackToOffer = () => {
-    // Go straight to checkout — no need to reopen the main popup
-    markAccepted();
     setExitOpen(false);
-    navigate('/checkout?plan=pro&trial=3days');
+    redirectToTrialCheckout();
   };
 
   const handleExitOpenChange = (open: boolean) => {
@@ -158,12 +192,13 @@ export default function TrialPaywallModal() {
             <div className="relative z-10 mb-3">
               <Badge className="bg-amber-400 text-amber-900 font-bold px-3 py-1 text-xs uppercase tracking-wider shadow-sm">
                 <Zap className="w-3 h-3 mr-1 inline-block" />
-                Offre exclusive · Durée limitée
+                Offre exclusive · Une seule fois
               </Badge>
             </div>
 
             {/* Headline */}
             <div className="relative z-10 space-y-1">
+              <p className="text-lg font-semibold text-emerald-100 mb-1">Voilà.</p>
               <DialogTitle className="text-3xl font-extrabold text-white leading-tight">
                 3 jours d&apos;essai Pro
                 <br />
@@ -196,13 +231,13 @@ export default function TrialPaywallModal() {
               </p>
               <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5">
                 {[
-                  { text: 'Recherches illimitées' },
-                  { text: 'Export PDF illimité' },
-                  { text: 'Historique complet' },
-                  { text: 'Parcelles favorites' },
-                  { text: 'Risk Score IA illimité' },
-                  { text: 'Comparaison foncière' },
-                ].map(({ text }) => (
+                  'Recherches illimitées',
+                  'Export PDF illimité',
+                  'Historique complet',
+                  'Parcelles favorites',
+                  'Risk Score IA illimité',
+                  'Comparaison foncière',
+                ].map((text) => (
                   <li key={text} className="flex items-center gap-2 text-sm text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                     {text}
@@ -225,15 +260,19 @@ export default function TrialPaywallModal() {
             <div className="flex flex-col gap-2">
               <Button
                 onClick={handleStartTrial}
+                disabled={loading}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 text-base shadow-lg shadow-emerald-200"
               >
-                <Crown className="w-5 h-5 mr-2" />
-                Démarrer mon essai gratuit de 3 jours
-                <ArrowRight className="w-5 h-5 ml-2" />
+                {loading ? (
+                  <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Chargement…</>
+                ) : (
+                  <><Crown className="w-5 h-5 mr-2" />Démarrer mon essai gratuit de 3 jours<ArrowRight className="w-5 h-5 ml-2" /></>
+                )}
               </Button>
               <button
                 onClick={() => handleMainOpenChange(false)}
-                className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1"
+                disabled={loading}
+                className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1 disabled:opacity-50"
               >
                 Non merci, je reste limité à 1 recherche et 1 rapport
               </button>
@@ -241,7 +280,7 @@ export default function TrialPaywallModal() {
 
             {/* Trust line */}
             <p className="text-center text-xs text-slate-400">
-              Annulation à tout moment · Aucune carte requise pour commencer
+              Carte requise · Aucun débit pendant 3 jours · Annulation à tout moment
             </p>
           </div>
         </DialogContent>
@@ -259,10 +298,10 @@ export default function TrialPaywallModal() {
               </div>
               <div>
                 <DialogTitle className="text-xl font-extrabold text-white leading-tight">
-                  Vous êtes sûr ?
+                  C&apos;est ta dernière chance.
                 </DialogTitle>
                 <DialogDescription className="text-red-100 text-xs mt-0.5">
-                  C&apos;est la dernière fois que nous vous proposons cette offre.
+                  Si tu fermes ce message, tu ne pourras plus accéder à la plateforme gratuitement.
                 </DialogDescription>
               </div>
             </div>
@@ -318,20 +357,27 @@ export default function TrialPaywallModal() {
               <span className="font-bold">Attention :</span> si vous confirmez la fermeture,
               cette offre d&apos;essai gratuit de 3 jours ne vous sera
               <span className="font-bold"> plus jamais proposée.</span>
+              <br />
+              Vas-y, utilise-la !
             </div>
 
             {/* Buttons */}
             <div className="flex flex-col gap-2 pt-1">
               <Button
                 onClick={handleBackToOffer}
+                disabled={loading}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11"
               >
-                <Crown className="w-4 h-4 mr-2" />
-                Reprendre l&apos;offre — 3 jours gratuits
+                {loading ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Chargement…</>
+                ) : (
+                  <><Crown className="w-4 h-4 mr-2" />Reprendre l&apos;offre — 3 jours gratuits</>
+                )}
               </Button>
               <button
                 onClick={handleConfirmExit}
-                className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1"
+                disabled={loading}
+                className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1 disabled:opacity-50"
               >
                 Non merci, j&apos;accepte les limitations et refuse l&apos;offre
               </button>
