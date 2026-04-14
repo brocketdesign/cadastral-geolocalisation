@@ -155,7 +155,7 @@ const server = createServer(async (req, res) => {
       if (!adminUserId || !ad?.id) return json(res, 400, { error: 'adminUserId et ad.id requis.' });
       const requester = await db.collection('user_plans').findOne({ clerkUserId: adminUserId });
       if (!requester?.isAdmin) return json(res, 403, { error: 'Accès refusé.' });
-      const { id, ...fields } = ad;
+      const { id, _id, ...fields } = ad;
       await db.collection('ads_config').updateOne({ id }, { $set: { ...fields, updatedAt: new Date() } }, { upsert: true });
       return json(res, 200, { success: true });
     }
