@@ -47,13 +47,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'subscription',
       payment_method_types: ['card'],
+      locale: 'fr',
       line_items: [
         {
           price_data: {
             currency: 'eur',
             product_data: {
               name: 'CadastrMap Pro',
-              description: 'Accès illimité à toutes les fonctionnalités Pro – recherches, exports PDF, Risk Score IA et plus.',
+              description:
+                '✓ Recherches cadastrales illimitées\n' +
+                '✓ Risk Score IA & analyse foncière\n' +
+                '✓ Exports PDF professionnels\n' +
+                '✓ Comparaison de parcelles\n' +
+                '✓ Alertes foncières en temps réel\n' +
+                '✓ Support prioritaire',
+              images: ['https://cadastrmap.fr/og-image.png'],
             },
             unit_amount: 2900, // 29,00 €
             recurring: {
@@ -63,6 +71,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           quantity: 1,
         },
       ],
+      custom_text: {
+        submit: {
+          message: trial
+            ? '3 jours gratuits sans engagement — puis 29 €/mois. Résiliable à tout moment.'
+            : 'Abonnement mensuel sans engagement. Résiliable à tout moment.',
+        },
+      },
       metadata: {
         userId,
         plan: 'pro',
@@ -75,6 +90,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (trial) {
       sessionParams.subscription_data = {
         trial_period_days: 3,
+        trial_settings: {
+          end_behavior: {
+            missing_payment_method: 'cancel',
+          },
+        },
         metadata: {
           userId,
           plan: 'pro',

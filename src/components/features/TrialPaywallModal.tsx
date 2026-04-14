@@ -170,11 +170,11 @@ export default function TrialPaywallModal() {
       {/* ── MAIN OFFER DIALOG ─────────────────────────────────── */}
       <Dialog open={mainOpen} onOpenChange={handleMainOpenChange}>
         <DialogContent
-          className="max-w-lg p-0 overflow-hidden border-0 shadow-2xl"
+          className="max-w-md p-0 flex flex-col border-0 shadow-2xl max-h-[90vh]"
           showCloseButton={false}
         >
           {/* Header gradient */}
-          <div className="relative bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 px-6 pt-8 pb-10 text-white overflow-hidden">
+          <div className="relative bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 px-6 pt-8 pb-10 text-white overflow-hidden shrink-0">
             {/* Background decoration */}
             <div className="absolute -top-8 -right-8 w-44 h-44 bg-white/10 rounded-full" />
             <div className="absolute -bottom-12 -left-6 w-36 h-36 bg-white/10 rounded-full" />
@@ -198,14 +198,13 @@ export default function TrialPaywallModal() {
 
             {/* Headline */}
             <div className="relative z-10 space-y-1">
-              <p className="text-lg font-semibold text-emerald-100 mb-1">Voilà.</p>
               <DialogTitle className="text-3xl font-extrabold text-white leading-tight">
                 3 jours d&apos;essai Pro
                 <br />
                 <span className="text-amber-300">100&nbsp;% gratuits</span>
               </DialogTitle>
               <DialogDescription className="text-emerald-100 text-sm mt-2 leading-relaxed">
-                Accédez à toutes les fonctionnalités Pro sans engagement.
+                Profitez de toutes les fonctionnalités Pro sans engagement.
                 <br />
                 <span className="font-semibold text-white">
                   Cette offre est disponible uniquement ici et maintenant.
@@ -222,8 +221,8 @@ export default function TrialPaywallModal() {
             </div>
           </div>
 
-          {/* Body */}
-          <div className="px-6 pt-5 pb-6 space-y-5 bg-white">
+          {/* Scrollable body */}
+          <div className="px-6 pt-5 pb-4 space-y-4 bg-white overflow-y-auto flex-1">
             {/* Pro features */}
             <div>
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
@@ -255,30 +254,28 @@ export default function TrialPaywallModal() {
                 définitivement.
               </p>
             </div>
+          </div>
 
-            {/* CTA buttons */}
-            <div className="flex flex-col gap-2">
-              <Button
-                onClick={handleStartTrial}
-                disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 text-base shadow-lg shadow-emerald-200"
-              >
-                {loading ? (
-                  <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Chargement…</>
-                ) : (
-                  <><Crown className="w-5 h-5 mr-2" />Démarrer mon essai gratuit de 3 jours<ArrowRight className="w-5 h-5 ml-2" /></>
-                )}
-              </Button>
-              <button
-                onClick={() => handleMainOpenChange(false)}
-                disabled={loading}
-                className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1 disabled:opacity-50"
-              >
-                Non merci, je reste limité à 1 recherche et 1 rapport
-              </button>
-            </div>
-
-            {/* Trust line */}
+          {/* Sticky CTA footer */}
+          <div className="px-6 pb-5 pt-3 bg-white border-t border-slate-100 shrink-0 flex flex-col gap-2">
+            <Button
+              onClick={handleStartTrial}
+              disabled={loading}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 text-base shadow-lg shadow-emerald-200"
+            >
+              {loading ? (
+                <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Chargement…</>
+              ) : (
+                <><Crown className="w-5 h-5 mr-2" />Démarrer mon essai gratuit de 3 jours<ArrowRight className="w-5 h-5 ml-2" /></>
+              )}
+            </Button>
+            <button
+              onClick={() => handleMainOpenChange(false)}
+              disabled={loading}
+              className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1 disabled:opacity-50"
+            >
+              Non merci, je préfère rester sur le plan limité
+            </button>
             <p className="text-center text-xs text-slate-400">
               Carte requise · Aucun débit pendant 3 jours · Annulation à tout moment
             </p>
@@ -288,9 +285,9 @@ export default function TrialPaywallModal() {
 
       {/* ── EXIT INTENT DIALOG ────────────────────────────────── */}
       <Dialog open={exitOpen} onOpenChange={handleExitOpenChange}>
-        <DialogContent className="max-w-md p-0 overflow-hidden border-0 shadow-2xl" showCloseButton={false}>
+        <DialogContent className="max-w-md p-0 flex flex-col border-0 shadow-2xl max-h-[90vh]" showCloseButton={false}>
           {/* Top danger stripe */}
-          <div className="bg-gradient-to-r from-red-500 to-orange-500 px-6 pt-6 pb-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-red-500 to-orange-500 px-6 pt-6 pb-8 text-white relative overflow-hidden shrink-0">
             <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full" />
             <div className="relative z-10 flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center shrink-0">
@@ -298,17 +295,17 @@ export default function TrialPaywallModal() {
               </div>
               <div>
                 <DialogTitle className="text-xl font-extrabold text-white leading-tight">
-                  C&apos;est ta dernière chance.
+                  Dernière opportunité.
                 </DialogTitle>
                 <DialogDescription className="text-red-100 text-xs mt-0.5">
-                  Si tu fermes ce message, tu ne pourras plus accéder à la plateforme gratuitement.
+                  Si vous fermez ce message, vous ne pourrez plus accéder à la plateforme gratuitement.
                 </DialogDescription>
               </div>
             </div>
           </div>
 
           {/* Body */}
-          <div className="px-6 pt-5 pb-6 space-y-4 bg-white">
+          <div className="px-6 pt-5 pb-6 space-y-4 bg-white overflow-y-auto flex-1">
             {/* Side-by-side comparison */}
             <div className="grid grid-cols-2 gap-3 text-xs">
               {/* Without Pro */}
@@ -358,7 +355,7 @@ export default function TrialPaywallModal() {
               cette offre d&apos;essai gratuit de 3 jours ne vous sera
               <span className="font-bold"> plus jamais proposée.</span>
               <br />
-              Vas-y, utilise-la !
+              Nous vous invitons à en profiter dès maintenant.
             </div>
 
             {/* Buttons */}
@@ -371,7 +368,7 @@ export default function TrialPaywallModal() {
                 {loading ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Chargement…</>
                 ) : (
-                  <><Crown className="w-4 h-4 mr-2" />Reprendre l&apos;offre — 3 jours gratuits</>
+                  <><Crown className="w-4 h-4 mr-2" />Accepter l&apos;offre — 3 jours gratuits</>
                 )}
               </Button>
               <button
@@ -379,7 +376,7 @@ export default function TrialPaywallModal() {
                 disabled={loading}
                 className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1 disabled:opacity-50"
               >
-                Non merci, j&apos;accepte les limitations et refuse l&apos;offre
+                Non merci, je décline cette offre et accepte les limitations
               </button>
             </div>
           </div>

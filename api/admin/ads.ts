@@ -123,10 +123,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(403).json({ error: 'Accès refusé.' });
       }
 
-      const { id, ...fields } = ad;
+      const { id, _id, ...fields } = ad;
       await db.collection('ads_config').updateOne(
         { id },
-        { $set: { id, ...fields, updatedAt: new Date() } },
+        { $set: { ...fields, updatedAt: new Date() } },
         { upsert: true }
       );
 

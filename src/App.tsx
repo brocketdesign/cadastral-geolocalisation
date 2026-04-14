@@ -13,7 +13,10 @@ import AgencySettings from '@/pages/settings/AgencySettings';
 import ClientsPage from '@/pages/Clients';
 import UserManagement from '@/pages/admin/UserManagement';
 import AdManagement from '@/pages/admin/AdManagement';
+import AdRequests from '@/pages/admin/AdRequests';
+import Advertise from '@/pages/Advertise';
 import CheckoutSuccess from '@/pages/CheckoutSuccess';
+import ReportsDashboard from '@/pages/ReportsDashboard';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import RequireAuth from '@/components/features/RequireAuth';
 
@@ -133,6 +136,36 @@ function App() {
             <RequireAuth>
               <DashboardLayout>
                 <AdManagement />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <ReportsDashboard />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/advertise"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <Advertise />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/ad-requests"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <AdRequests />
               </DashboardLayout>
             </RequireAuth>
           }

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
+import { frFR } from '@clerk/localizations'
 import { clerkAppearance } from '@/lib/clerk-theme'
 import './index.css'
 import App from './App.tsx'
@@ -13,7 +14,7 @@ if (!CLERK_KEY) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ClerkProvider publishableKey={CLERK_KEY} appearance={clerkAppearance}>
+    <ClerkProvider publishableKey={CLERK_KEY} appearance={clerkAppearance} localization={frFR}>
       <App />
     </ClerkProvider>
   </StrictMode>,

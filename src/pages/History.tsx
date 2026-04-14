@@ -13,17 +13,27 @@ import {
   Calendar,
   AlertTriangle,
   TrendingUp,
+  FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { SearchHistoryItem } from '@/types';
 import { getSearchHistory, toggleFavorite, removeFromHistory, clearHistory } from '@/lib/storage';
 import { addParcelToStore, historyItemToComparisonParcel, getStoredParcelCount } from '@/lib/comparison-store';
 import UpgradeGate from '@/components/features/UpgradeGate';
+import ReportPanel from '@/components/features/ReportPanel';
+import type { GeoResult } from '@/types';
 
 export default function HistoryPage() {
   const navigate = useNavigate();
   const [history, setHistory] = useState<SearchHistoryItem[]>([]);
   const [filter, setFilter] = useState('');
+  const [reportPanelOpen, setReportPanelOpen] = useState(false);
+  const [reportResult, setReportResult] = useState<GeoResult | null>(null);
+
+  const handleOpenReport = (result: GeoResult) => {
+    setReportResult(result);
+    setReportPanelOpen(true);
+  };
 
   useEffect(() => {
     getSearchHistory().then(setHistory);
@@ -76,6 +86,7 @@ export default function HistoryPage() {
   });
 
   return (
+    <>
     <UpgradeGate
       requiredPlan="pro"
       featureLabel="L'historique complet des recherches est réservé au plan Pro. Passez au Pro pour retrouver toutes vos recherches passées."
@@ -147,6 +158,13 @@ export default function HistoryPage() {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button
+                      onClick={() => handleOpenReport(item.result)}
+                      className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
+                      title="Générer un rapport"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => handleAddToComparison(item)}
                       className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
                       title="Ajouter à la comparaison"
@@ -208,5 +226,14 @@ export default function HistoryPage() {
       )}
     </div>
     </UpgradeGate>
+
+    {reportResult && (
+      <ReportPanel
+        open={reportPanelOpen}
+        onOpenChange={setReportPanelOpen}
+        result={reportResult}
+      />
+    )}
+    </>
   );
 }

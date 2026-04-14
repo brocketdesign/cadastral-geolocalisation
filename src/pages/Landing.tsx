@@ -207,7 +207,7 @@ export default function Landing() {
 
             <FadeIn delay={0.8} direction="up">
               <p className="text-sm text-slate-500 mt-4">
-                Essai gratuit 14 jours — Aucune carte bancaire requise
+                Essai gratuit 3 jours — Accès à toutes les fonctionnalités
               </p>
             </FadeIn>
           </div>
@@ -380,7 +380,7 @@ export default function Landing() {
           </FadeIn>
           <FadeIn delay={0.25}>
             <p className="text-lg text-emerald-100 mb-8 max-w-2xl mx-auto">
-              Commencez votre essai gratuit de 14 jours et découvrez pourquoi les meilleurs
+              Commencez votre essai gratuit de 3 jours et découvrez pourquoi les meilleurs
               professionnels de l'immobilier caribéen nous font confiance.
             </p>
           </FadeIn>
@@ -400,11 +400,11 @@ export default function Landing() {
             <div className="flex items-center justify-center gap-6 mt-6 text-emerald-200 text-sm">
               <span className="flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" />
-                14 jours gratuits
+                3 jours gratuits
               </span>
               <span className="flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" />
-                Sans carte bancaire
+                Toutes les fonctionnalités incluses
               </span>
               <span className="flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" />

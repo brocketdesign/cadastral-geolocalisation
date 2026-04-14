@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import type { GeoResult, Agency, Client } from '@/types';
 import { generateReportPDF } from '@/lib/report-pdf';
+import { addGeneratedReport } from '@/lib/report-storage';
 
 /* ─── API helpers ──────────────────────────────────────────── */
 
@@ -178,6 +179,11 @@ export default function ReportPanel({ open, onOpenChange, result }: ReportPanelP
     try {
       const agency = agencies.find((a) => String(a._id) === selectedAgencyId) ?? null;
       await generateReportPDF(result, agency, selectedClient);
+      addGeneratedReport({
+        result,
+        agencyName: agency?.name,
+        clientName: selectedClient?.name,
+      });
       setDone(true);
       setTimeout(() => setDone(false), 3000);
     } catch (err) {

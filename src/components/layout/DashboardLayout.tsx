@@ -149,12 +149,12 @@ export default function DashboardLayout({
               Rapports
             </p>
           </div>
-          {/* "Générer un rapport" redirects to dashboard */}
+          {/* "Générer un rapport" */}
           <Link
-            to="/dashboard"
+            to="/reports"
             onClick={() => setSidebarOpen(false)}
             className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
-              location.pathname === '/dashboard'
+              location.pathname === '/reports'
                 ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
@@ -215,6 +215,25 @@ export default function DashboardLayout({
             Paramètres
           </Link>
 
+          {/* ── Publicité ── */}
+          <div className="px-3 mt-5 mb-1.5">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+              Publicité
+            </p>
+          </div>
+          <Link
+            to="/advertise"
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
+              location.pathname === '/advertise'
+                ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <Megaphone className="w-4 h-4" />
+            Faire de la publicité
+          </Link>
+
           {isAdmin && (
             <>
               <div className="px-3 mt-6 mb-2">
@@ -245,6 +264,18 @@ export default function DashboardLayout({
               >
                 <Megaphone className="w-4 h-4" />
                 Publicités
+              </Link>
+              <Link
+                to="/admin/ad-requests"
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-6 py-2.5 text-sm transition-colors ${
+                  location.pathname === '/admin/ad-requests'
+                    ? 'bg-emerald-600/20 text-emerald-400 border-r-2 border-emerald-400'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                Demandes pub
               </Link>
             </>
           )}
