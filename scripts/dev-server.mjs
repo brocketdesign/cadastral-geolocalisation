@@ -28,6 +28,8 @@ const envVars = Object.fromEntries(
 
 const MONGODB_URI = envVars.MONGODB_URI;
 const CLERK_SECRET_KEY = envVars.CLERK_SECRET_KEY;
+const RESEND_API_KEY = envVars.RESEND_API_KEY;
+const RESEND_FROM_EMAIL = envVars.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 const PORT = 3000;
 
 let _client = null;
@@ -58,6 +60,85 @@ function parseQuery(url) {
   const u = new URL(url, 'http://localhost');
   return Object.fromEntries(u.searchParams);
 }
+
+// ── Email helpers ────────────────────────────────────────────────────────────
+
+async function sendEmailViaResend(to, subject, html) {
+  if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY not configured');
+  const { Resend } = await import('resend');
+  const client = new Resend(RESEND_API_KEY);
+  const result = await client.emails.send({ from: RESEND_FROM_EMAIL, to, subject, html });
+  if (result.error) throw new Error(result.error.message);
+  return result.data?.id;
+}
+
+function buildEmailHtml(type, data = {}) {
+  const { name = 'là', email = '' } = data;
+  const APP_URL = 'http://localhost:5173';
+  const dashboardUrl = `${APP_URL}/dashboard`;
+
+  const BASE_STYLE = `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;`;
+
+  const layout = (content) => `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#f1f5f9;${BASE_STYLE}">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:40px 20px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<tr><td style="background:#0f172a;padding:28px 40px;border-radius:12px 12px 0 0;">
+<span style="color:#fff;font-size:22px;font-weight:700;">📍 Cada<span style="color:#34d399;">Stre</span>Map</span>
+</td></tr>
+<tr><td style="background:#fff;padding:40px;border-radius:0 0 12px 12px;">
+${content}
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:40px;padding-top:24px;border-top:1px solid #e2e8f0;">
+<tr><td style="text-align:center;color:#94a3b8;font-size:12px;">
+<p style="margin:0;">© ${new Date().getFullYear()} CadaStreMap — <a href="${APP_URL}" style="color:#34d399;">Plateforme</a></p>
+</td></tr></table>
+</td></tr></table>
+</td></tr></table>
+</body></html>`;
+
+  if (type === 'welcome') {
+    return layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#0f172a;">Bienvenue sur CadaStreMap, ${name} ! 🎉</h1>
+      <p style="color:#64748b;font-size:15px;line-height:1.7;">Votre compte est créé. Commencez à explorer le cadastre français, analyser les risques fonciers et générer des rapports professionnels.</p>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="${dashboardUrl}" style="background:#10b981;color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;">Accéder au tableau de bord →</a>
+      </div>
+    `);
+  }
+  if (type === 'trial-started') {
+    return layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#0f172a;">Votre essai gratuit est activé, ${name} !</h1>
+      <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:10px;padding:20px 24px;margin-bottom:24px;">
+        <p style="margin:0;font-size:28px;font-weight:700;color:#047857;">3 jours d'accès complet</p>
+        <p style="margin:6px 0 0;font-size:13px;color:#059669;">Toutes les fonctionnalités Pro — sans engagement, sans carte bancaire.</p>
+      </div>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="${dashboardUrl}" style="background:#10b981;color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;">Explorer CadaStreMap →</a>
+      </div>
+    `);
+  }
+  if (type === 'account-locked') {
+    return layout(`
+      <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px 24px;margin-bottom:24px;">
+        <p style="margin:0;font-size:15px;font-weight:600;color:#dc2626;">⚠️ Compte temporairement suspendu</p>
+      </div>
+      <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0f172a;">Bonjour ${name},</h1>
+      <p style="color:#334155;font-size:15px;line-height:1.7;">Votre compte a été temporairement suspendu suite à des tentatives de connexion incorrectes ou une activité inhabituelle.</p>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="${APP_URL}/sign-in" style="background:#dc2626;color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;">Réinitialiser mon mot de passe</a>
+      </div>
+    `);
+  }
+  return '<p>Email type not found.</p>';
+}
+
+const EMAIL_SUBJECTS = {
+  welcome: 'Bienvenue sur CadaStreMap 🗺️',
+  'trial-started': 'Votre essai gratuit commence — 3 jours pour tout explorer 🚀',
+  'account-locked': '⚠️ Votre compte CadaStreMap a été temporairement suspendu',
+};
 
 const DEFAULT_ADS = [
   { id: 'pro-upgrade', type: 'text', enabled: true, icon: 'Crown', title: 'Passez au plan Pro', description: 'Recherches illimitées, export PDF, vue satellite et support prioritaire.', cta: 'Essai gratuit 14 jours', color: 'emerald', link: '/pricing' },
@@ -257,6 +338,41 @@ const server = createServer(async (req, res) => {
       const { ObjectId } = await import('mongodb');
       await db.collection('agencies').deleteOne({ _id: new ObjectId(id), user_id: userId });
       return json(res, 200, { success: true });
+    }
+
+    // ── POST /api/admin/send-test-email ───────────────────────────────────
+    if (path === '/api/admin/send-test-email' && method === 'POST') {
+      const body = await parseBody(req);
+      const { adminUserId, type, to, name } = body;
+      if (!adminUserId || !type || !to) return json(res, 400, { error: 'adminUserId, type et to sont requis.' });
+      const VALID_TYPES = ['welcome', 'trial-started', 'account-locked'];
+      if (!VALID_TYPES.includes(type)) return json(res, 400, { error: 'Type invalide.' });
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return json(res, 400, { error: 'Adresse e-mail invalide.' });
+      const requester = await db.collection('user_plans').findOne({ clerkUserId: adminUserId });
+      if (!requester?.isAdmin) return json(res, 403, { error: 'Accès refusé.' });
+      const html = buildEmailHtml(type, { name: name || 'Admin Test', email: to });
+      const subject = EMAIL_SUBJECTS[type];
+      let status = 'failed'; let messageId; let error;
+      try {
+        messageId = await sendEmailViaResend(to, subject, html);
+        status = 'sent';
+      } catch (err) { error = err.message; }
+      await db.collection('email_logs').insertOne({ type, to, subject, status, sentAt: new Date(), isTest: true, ...(messageId ? { messageId } : {}), ...(error ? { error } : {}) });
+      if (status !== 'sent') return json(res, 500, { error: error || 'Échec de l\'envoi.' });
+      return json(res, 200, { success: true, messageId });
+    }
+
+    // ── GET /api/admin/email-logs ─────────────────────────────────────────
+    if (path === '/api/admin/email-logs' && method === 'GET') {
+      const { adminUserId, limit = '50', type: logType } = query;
+      if (!adminUserId) return json(res, 400, { error: 'adminUserId requis.' });
+      const requester = await db.collection('user_plans').findOne({ clerkUserId: adminUserId });
+      if (!requester?.isAdmin) return json(res, 403, { error: 'Accès refusé.' });
+      const filter = {};
+      if (logType && logType !== 'all') filter.type = logType;
+      const logs = await db.collection('email_logs').find(filter).sort({ sentAt: -1 }).limit(Math.min(parseInt(limit, 10) || 50, 200)).toArray();
+      const stats = await db.collection('email_logs').aggregate([{ $group: { _id: { type: '$type', status: '$status' }, count: { $sum: 1 } } }]).toArray();
+      return json(res, 200, { logs, stats });
     }
 
     json(res, 404, { error: 'Route not found' });

@@ -14,6 +14,7 @@ import ClientsPage from '@/pages/Clients';
 import UserManagement from '@/pages/admin/UserManagement';
 import AdManagement from '@/pages/admin/AdManagement';
 import AdRequests from '@/pages/admin/AdRequests';
+import EmailDashboard from '@/pages/admin/EmailDashboard';
 import Advertise from '@/pages/Advertise';
 import CheckoutSuccess from '@/pages/CheckoutSuccess';
 import ReportsDashboard from '@/pages/ReportsDashboard';
@@ -166,6 +167,16 @@ function App() {
             <RequireAuth>
               <DashboardLayout>
                 <AdRequests />
+              </DashboardLayout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/emails"
+          element={
+            <RequireAuth>
+              <DashboardLayout>
+                <EmailDashboard />
               </DashboardLayout>
             </RequireAuth>
           }

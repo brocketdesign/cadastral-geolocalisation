@@ -4,7 +4,9 @@ import { toast } from 'sonner';
 import {
   Settings,
   Inbox,
+  ShieldAlert,
 } from 'lucide-react';
+import { useUserPlan } from '@/hooks/use-user-plan';
 import UpgradeGate from '@/components/features/UpgradeGate';
 import ProfileContactSection from '@/components/features/alerts/ProfileContactSection';
 import AlertZonesSection from '@/components/features/alerts/AlertZonesSection';
@@ -32,6 +34,8 @@ import {
 } from '@/lib/mock-alerts';
 
 export default function AlertSettings() {
+  const { isAdmin } = useUserPlan();
+
   // État avec données fictives
   const [profile, setProfile] = useState<AlertUserProfile>(MOCK_USER_PROFILE);
   const [zones, setZones] = useState<AlertZone[]>(MOCK_ALERT_ZONES);
@@ -86,6 +90,15 @@ export default function AlertSettings() {
       description: 'Le fichier CSV sera téléchargé dans quelques secondes.',
     });
   };
+
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-3 text-slate-500">
+        <ShieldAlert className="w-10 h-10" />
+        <p className="text-sm font-medium">Accès réservé aux administrateurs</p>
+      </div>
+    );
+  }
 
   return (
     <UpgradeGate

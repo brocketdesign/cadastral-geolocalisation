@@ -12,11 +12,9 @@ import {
   Download,
   Search,
   History,
-  Lock,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
 import {
   getGeneratedReports,
   removeGeneratedReport,
@@ -29,7 +27,7 @@ import { useUserPlan } from '@/hooks/use-user-plan';
 
 export default function ReportsDashboard() {
   const navigate = useNavigate();
-  const { plan } = useUserPlan();
+  useUserPlan();
   const [reports, setReports] = useState<GeneratedReport[]>([]);
   const [reportPanelOpen, setReportPanelOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<GeneratedReport | null>(null);

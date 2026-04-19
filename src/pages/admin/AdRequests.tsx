@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,8 +24,6 @@ import {
   ThumbsDown,
   RefreshCw,
   ArrowUpRight,
-  Users,
-  TrendingUp,
   CircleDollarSign,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -311,7 +308,6 @@ export default function AdRequests() {
   const pending  = requests.filter((r) => r.status === 'pending');
   const approved = requests.filter((r) => r.status === 'approved');
   const active   = requests.filter((r) => r.status === 'active');
-  const rejected = requests.filter((r) => r.status === 'rejected');
   const totalRevenue = requests
     .filter((r) => r.status === 'active' || r.status === 'approved')
     .reduce((sum, r) => sum + parseInt(r.budget.replace(/[^0-9]/g, ''), 10), 0);
