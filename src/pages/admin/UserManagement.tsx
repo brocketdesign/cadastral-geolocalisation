@@ -108,8 +108,8 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Users className="w-6 h-6 text-emerald-600" />
@@ -150,9 +150,9 @@ export default function UserManagement() {
                 return (
                   <div
                     key={u.clerkUserId}
-                    className="flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors"
+                    className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-3 hover:bg-slate-50 transition-colors"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
                         <span className="text-xs font-semibold text-slate-600">
                           {(u.email?.[0] ?? '?').toUpperCase()}

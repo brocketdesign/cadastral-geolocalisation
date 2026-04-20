@@ -503,7 +503,7 @@ export default function Dashboard() {
                   center={[result.lat, result.lng]}
                   zoom={16}
                   scrollWheelZoom={true}
-                  style={{ height: '450px', width: '100%' }}
+                  className="h-[300px] sm:h-[400px] lg:h-[450px] w-full"
                 >
                   <LayersControl position="topright">
                     <LayersControl.BaseLayer checked name="Standard">
@@ -550,7 +550,7 @@ export default function Dashboard() {
                   </Marker>
                 </MapContainer>
               ) : (
-                <div className="h-[450px] flex items-center justify-center bg-slate-100 border-t border-slate-200">
+                <div className="h-[300px] sm:h-[400px] lg:h-[450px] flex items-center justify-center bg-slate-100 border-t border-slate-200">
                   <div className="text-center text-slate-500">
                     <MapPin className="w-16 h-16 mx-auto mb-3 opacity-30" />
                     <p className="text-lg font-medium">Aucune parcelle sélectionnée</p>

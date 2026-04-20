@@ -737,10 +737,10 @@ function ComparisonTable({ parcels, winners }: ComparisonTableProps) {
 
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200">
-      <Table>
+      <Table className="min-w-[640px]">
         <TableHeader>
           <TableRow className="bg-slate-50">
-            <TableHead className="w-44 text-slate-600 font-semibold">Critère</TableHead>
+            <TableHead className="w-32 sm:w-44 text-slate-600 font-semibold">Critère</TableHead>
             {parcels.map((p) => (
               <TableHead key={p.id} className="text-center">
                 <div className="flex flex-col items-center gap-0.5">

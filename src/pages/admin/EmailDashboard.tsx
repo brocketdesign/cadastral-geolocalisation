@@ -283,10 +283,10 @@ export default function EmailDashboard() {
   return (
     <div className="space-y-6 p-1">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <Mail className="w-6 h-6 text-emerald-500" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500 shrink-0" />
             Emails transactionnels
           </h1>
           <p className="text-slate-500 text-sm mt-1">
@@ -327,7 +327,7 @@ export default function EmailDashboard() {
       </div>
 
       <Tabs defaultValue="templates">
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 flex flex-wrap h-auto gap-1">
           <TabsTrigger value="templates">
             <Eye className="w-4 h-4 mr-1.5" />
             Templates & Aperçu
@@ -516,7 +516,8 @@ export default function EmailDashboard() {
             </div>
           ) : (
             <div className="border border-slate-200 rounded-xl overflow-hidden">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm min-w-[480px]">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Statut</th>
@@ -582,6 +583,7 @@ export default function EmailDashboard() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </TabsContent>
