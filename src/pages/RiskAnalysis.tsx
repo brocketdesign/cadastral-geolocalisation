@@ -149,21 +149,21 @@ export default function RiskAnalysis() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0">
               <Shield className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Foncier Risk Score</h1>
-              <p className="text-slate-500 text-sm">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Foncier Risk Score</h1>
+              <p className="text-slate-500 text-xs sm:text-sm">
                 Analyse de risque foncier propulsée par l'IA
               </p>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="outline" className="border-emerald-300 text-emerald-700 bg-emerald-50">
             <Brain className="w-3.5 h-3.5 mr-1" />
             IA
