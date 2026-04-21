@@ -108,11 +108,12 @@ export function AdBanner({ variant = 'inline', className = '' }: AdBannerProps) 
   const { plan, isAdmin, isLoaded } = useUserPlan();
   const { config } = useAdsConfig();
 
-  const pool = config?.textAds?.length ? config.textAds : FALLBACK_TEXT_ADS;
-  const [ad] = useState<TextAd>(() => getRandomTextAd(pool.length ? pool : FALLBACK_TEXT_ADS));
+  // Use fallback only when config hasn't loaded yet; once loaded, respect what the API returned
+  const pool = config === null ? FALLBACK_TEXT_ADS : (config.textAds ?? []);
+  const [ad] = useState<TextAd | null>(() => pool.length ? getRandomTextAd(pool) : null);
 
-  // Don't show ads until plan is known, to paying users, or to admins
-  if (!isLoaded || plan !== 'free' || isAdmin || dismissed) return null;
+  // Don't show ads until plan is known, to paying users, admins, or when no ad is available
+  if (!isLoaded || plan !== 'free' || isAdmin || dismissed || !ad) return null;
 
   const colors = colorMap[ad.color] || colorMap.emerald;
   const Icon: LucideIcon = ICON_MAP[ad.icon] ?? Crown;
@@ -287,11 +288,9 @@ function ImageAdWrapper({
   const { plan, isAdmin, isLoaded } = useUserPlan();
   const { config } = useAdsConfig();
 
-  const pool = config?.imageAds?.length ? config.imageAds : FALLBACK_IMAGE_ADS;
-  const [ad] = useState<LiveImageAd | null>(() => getRandomImageAd(
-    pool.length ? pool : FALLBACK_IMAGE_ADS,
-    format
-  ));
+  // Use fallback only when config hasn't loaded yet; once loaded, respect what the API returned
+  const pool = config === null ? FALLBACK_IMAGE_ADS : (config.imageAds ?? []);
+  const [ad] = useState<LiveImageAd | null>(() => getRandomImageAd(pool, format));
 
   if (!isLoaded || plan !== 'free' || isAdmin || dismissed || !ad) return null;
 

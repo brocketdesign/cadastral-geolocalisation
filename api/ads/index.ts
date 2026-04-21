@@ -130,14 +130,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { db } = await connectToDatabase();
-    const configs = await db.collection('ads_config').find({ enabled: true }).toArray();
+    const allConfigs = await db.collection('ads_config').find({}).toArray();
 
-    if (!configs || configs.length === 0) {
+    // If the collection is completely empty (never seeded), use defaults
+    if (!allConfigs || allConfigs.length === 0) {
       return res.status(200).json({ textAds: DEFAULT_TEXT_ADS, imageAds: DEFAULT_IMAGE_ADS });
     }
 
-    const textAds = configs.filter((a) => a.type === 'text');
-    const imageAds = configs.filter((a) => a.type === 'image');
+    // Otherwise, respect the enabled flag — return only enabled ads (may be empty)
+    const enabled = allConfigs.filter((a) => a.enabled === true);
+    const textAds = enabled.filter((a) => a.type === 'text');
+    const imageAds = enabled.filter((a) => a.type === 'image');
 
     return res.status(200).json({ textAds, imageAds });
   } catch {
