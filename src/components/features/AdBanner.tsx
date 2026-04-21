@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,39 +20,6 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Download,
   Users,
 };
-
-const FALLBACK_TEXT_ADS: TextAd[] = [
-  {
-    id: 'pro-upgrade', type: 'text', enabled: true, icon: 'Crown',
-    title: 'Passez au plan Pro',
-    description: 'Recherches illimitées, export PDF, vue satellite et support prioritaire.',
-    cta: 'Essai gratuit 14 jours', color: 'emerald', link: '/pricing',
-  },
-  {
-    id: 'batch-search', type: 'text', enabled: true, icon: 'Zap',
-    title: 'Recherche par lot',
-    description: 'Importez un fichier CSV et géolocalisez des centaines de parcelles en un clic.',
-    cta: 'Découvrir le plan Pro', color: 'violet', link: '/pricing',
-  },
-  {
-    id: 'pdf-export', type: 'text', enabled: true, icon: 'Download',
-    title: 'Rapports PDF professionnels',
-    description: 'Générez des fiches parcellaires complètes pour vos clients en un clic.',
-    cta: 'Débloquer les exports', color: 'blue', link: '/pricing',
-  },
-  {
-    id: 'enterprise', type: 'text', enabled: true, icon: 'Users',
-    title: 'Solution multi-utilisateurs',
-    description: "Jusqu'à 10 collaborateurs, API REST, intégration CRM et marque blanche.",
-    cta: "Découvrir l'offre Entreprise", color: 'amber', link: '/pricing',
-  },
-  {
-    id: 'stats', type: 'text', enabled: true, icon: 'TrendingUp',
-    title: 'Analyses & statistiques',
-    description: "Suivez l'évolution des prix, comparez les zones et optimisez vos prospections.",
-    cta: 'Voir les fonctionnalités Pro', color: 'rose', link: '/pricing',
-  },
-];
 
 const colorMap: Record<string, { bg: string; border: string; text: string; badge: string; button: string; iconBg: string }> = {
   emerald: {
@@ -97,23 +64,20 @@ const colorMap: Record<string, { bg: string; border: string; text: string; badge
   },
 };
 
-function getRandomTextAd(pool: TextAd[]): TextAd {
-  const enabled = pool.filter((a) => a.enabled);
-  const candidates = enabled.length > 0 ? enabled : pool;
-  return candidates[Math.floor(Math.random() * candidates.length)];
-}
-
 export function AdBanner({ variant = 'inline', className = '' }: AdBannerProps) {
   const [dismissed, setDismissed] = useState(false);
   const { plan, isAdmin, isLoaded } = useUserPlan();
-  const { config } = useAdsConfig();
+  const { config, isLoaded: adsLoaded } = useAdsConfig();
+  const [ad, setAd] = useState<TextAd | null>(null);
 
-  // Use fallback only when config hasn't loaded yet; once loaded, respect what the API returned
-  const pool = config === null ? FALLBACK_TEXT_ADS : (config.textAds ?? []);
-  const [ad] = useState<TextAd | null>(() => pool.length ? getRandomTextAd(pool) : null);
+  useEffect(() => {
+    if (!adsLoaded || config === null) return;
+    const enabled = (config.textAds ?? []).filter((a) => a.enabled);
+    setAd(enabled.length ? enabled[Math.floor(Math.random() * enabled.length)] : null);
+  }, [config, adsLoaded]);
 
   // Don't show ads until plan is known, to paying users, admins, or when no ad is available
-  if (!isLoaded || plan !== 'free' || isAdmin || dismissed || !ad) return null;
+  if (!isLoaded || !adsLoaded || plan !== 'free' || isAdmin || dismissed || !ad) return null;
 
   const colors = colorMap[ad.color] || colorMap.emerald;
   const Icon: LucideIcon = ICON_MAP[ad.icon] ?? Crown;
@@ -230,53 +194,6 @@ export function AdInline({ className = '' }: { className?: string }) {
   return <AdBanner variant="inline" className={className} />;
 }
 
-// ─── Image-based real estate agency ads ───────────────────────────
-
-const FALLBACK_IMAGE_ADS: LiveImageAd[] = [
-  {
-    id: 'img-sidebar-prestige', type: 'image', enabled: true,
-    src: '/ads/sidebar-immo-prestige.png',
-    alt: 'Prestige Caraïbes Immobilier — Votre partenaire immobilier aux Antilles',
-    href: '#', format: 'sidebar',
-  },
-  {
-    id: 'img-sidebar-terrain', type: 'image', enabled: true,
-    src: '/ads/sidebar-terrain-expert.png',
-    alt: 'Terrain Expert Antilles — Expertise foncière & géomètre',
-    href: '#', format: 'sidebar',
-  },
-  {
-    id: 'img-banner-horizon', type: 'image', enabled: true,
-    src: '/ads/banner-horizon-immo.png',
-    alt: 'Horizon Immobilier DOM-TOM — Plus de 500 biens disponibles en Outre-mer',
-    href: '#', format: 'banner',
-  },
-  {
-    id: 'img-banner-invest', type: 'image', enabled: true,
-    src: '/ads/banner-invest-caraibes.png',
-    alt: "Invest Caraïbes — Investissez dans l'immobilier antillais",
-    href: '#', format: 'banner',
-  },
-  {
-    id: 'img-inline-soleil', type: 'image', enabled: true,
-    src: '/ads/inline-agence-soleil.png',
-    alt: 'Agence Soleil Immobilier — Trouvez votre bien de rêve aux Antilles',
-    href: '#', format: 'inline',
-  },
-  {
-    id: 'img-inline-neuf', type: 'image', enabled: true,
-    src: '/ads/inline-neuf-outremer.png',
-    alt: 'Outre-Mer Neuf — Programmes neufs en Guadeloupe, Martinique, Guyane',
-    href: '#', format: 'inline',
-  },
-];
-
-function getRandomImageAd(pool: LiveImageAd[], format: LiveImageAd['format']): LiveImageAd | null {
-  const candidates = pool.filter((a) => a.format === format && a.enabled);
-  if (!candidates.length) return null;
-  return candidates[Math.floor(Math.random() * candidates.length)];
-}
-
 function ImageAdWrapper({
   format,
   className = '',
@@ -286,13 +203,16 @@ function ImageAdWrapper({
 }) {
   const [dismissed, setDismissed] = useState(false);
   const { plan, isAdmin, isLoaded } = useUserPlan();
-  const { config } = useAdsConfig();
+  const { config, isLoaded: adsLoaded } = useAdsConfig();
+  const [ad, setAd] = useState<LiveImageAd | null>(null);
 
-  // Use fallback only when config hasn't loaded yet; once loaded, respect what the API returned
-  const pool = config === null ? FALLBACK_IMAGE_ADS : (config.imageAds ?? []);
-  const [ad] = useState<LiveImageAd | null>(() => getRandomImageAd(pool, format));
+  useEffect(() => {
+    if (!adsLoaded || config === null) return;
+    const enabled = (config.imageAds ?? []).filter((a) => a.format === format && a.enabled);
+    setAd(enabled.length ? enabled[Math.floor(Math.random() * enabled.length)] : null);
+  }, [config, adsLoaded, format]);
 
-  if (!isLoaded || plan !== 'free' || isAdmin || dismissed || !ad) return null;
+  if (!isLoaded || !adsLoaded || plan !== 'free' || isAdmin || dismissed || !ad) return null;
 
   return (
     <div className={`relative group rounded-lg overflow-hidden border border-slate-200 shadow-sm ${className}`}>
