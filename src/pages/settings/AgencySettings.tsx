@@ -35,6 +35,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import type { Agency } from '@/types';
+import UpgradeGate from '@/components/features/UpgradeGate';
 
 /* ─── API helpers ───────────────────────────────────────────── */
 
@@ -171,6 +172,11 @@ export default function AgencySettings() {
   };
 
   return (
+    <UpgradeGate
+      requiredPlan="pro"
+      featureLabel="La gestion des agences est réservée au plan Pro. Passez au Pro pour gérer vos agences et les inclure dans vos rapports PDF."
+      blurContent
+    >
     <div className="max-w-3xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
@@ -419,5 +425,6 @@ export default function AgencySettings() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </UpgradeGate>
   );
 }

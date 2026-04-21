@@ -280,16 +280,6 @@ function AdvertiseComingSoon() {
                 <p className="font-semibold text-slate-900 text-sm">{f.label}</p>
                 <p className="text-xs text-slate-500 mt-0.5">{f.ratio} — {f.placement}</p>
                 <p className="text-xs text-slate-400 mt-2 leading-relaxed">{f.description}</p>
-                <div className="mt-3 flex gap-3">
-                  <div>
-                    <p className="text-[10px] text-slate-400">/ semaine</p>
-                    <p className="text-sm font-bold text-slate-800">{f.prices.week} €</p>
-                  </div>
-                  <div className="border-l border-slate-200 pl-3">
-                    <p className="text-[10px] text-slate-400">/ mois</p>
-                    <p className="text-sm font-bold text-slate-800">{f.prices.month} €</p>
-                  </div>
-                </div>
               </button>
             );
           })}
@@ -396,16 +386,6 @@ function AdvertiseDashboard() {
                 <p className="font-semibold text-slate-900 text-sm">{f.label}</p>
                 <p className="text-xs text-slate-500 mt-0.5">{f.ratio} — {f.placement}</p>
                 <p className="text-xs text-slate-400 mt-2 leading-relaxed">{f.description}</p>
-                <div className="mt-3 flex gap-3">
-                  <div>
-                    <p className="text-[10px] text-slate-400">/ semaine</p>
-                    <p className="text-sm font-bold text-slate-800">{f.prices.week} €</p>
-                  </div>
-                  <div className="border-l border-slate-200 pl-3">
-                    <p className="text-[10px] text-slate-400">/ mois</p>
-                    <p className="text-sm font-bold text-slate-800">{f.prices.month} €</p>
-                  </div>
-                </div>
               </button>
             );
           })}

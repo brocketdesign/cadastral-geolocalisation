@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { exportRiskAnalysisPDF } from '@/lib/export-risk-pdf';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,7 @@ import {
   Brain,
   FileText,
   Download,
+  Search,
 } from 'lucide-react';
 import type { RiskAnalysisResult } from '@/types';
 import { CARIBBEAN_TERRITORIES } from '@/lib/territories';
@@ -40,11 +41,13 @@ import {
   RiskDetailCard,
 } from '@/components/features/RiskScoreComponents';
 import { canAnalyze, incrementDailyAnalysis, getRemainingAnalyses } from '@/lib/usage-limits';
+import UpgradeGate from '@/components/features/UpgradeGate';
 
 const API_BASE = '/api';
 
 export default function RiskAnalysis() {
   const { plan } = useUserPlan();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   // Form state – pre-fill from query params if coming from Dashboard
@@ -147,6 +150,35 @@ export default function RiskAnalysis() {
   };
 
   return (
+    <UpgradeGate
+      requiredPlan="pro"
+      featureLabel="Le Foncier Risk Score est réservé au plan Pro. Passez au Pro pour accéder aux analyses de risque foncier propulsées par l'IA."
+      blurContent
+    >
+    {!commune && !section && !numero ? (
+      <Card className="shadow-sm">
+        <CardContent className="p-12 text-center space-y-4">
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+            <Shield className="w-8 h-8 text-slate-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-700">
+            Aucune parcelle sélectionnée
+          </h3>
+          <p className="text-sm text-slate-500 max-w-sm mx-auto">
+            Recherchez une parcelle cadastrale depuis le tableau de bord pour lancer une analyse de risque foncier.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+            <Button
+              onClick={() => navigate('/dashboard')}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Rechercher une parcelle
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    ) : (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between">
@@ -734,5 +766,7 @@ export default function RiskAnalysis() {
         </div>
       </div>
     </div>
+    )}
+    </UpgradeGate>
   );
 }

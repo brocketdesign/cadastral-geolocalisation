@@ -34,6 +34,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import type { Client } from '@/types';
+import UpgradeGate from '@/components/features/UpgradeGate';
 
 /* ─── API helpers ───────────────────────────────────────────── */
 
@@ -169,6 +170,11 @@ export default function ClientsPage() {
   };
 
   return (
+    <UpgradeGate
+      requiredPlan="pro"
+      featureLabel="La gestion des clients est réservée au plan Pro. Passez au Pro pour gérer votre carnet de clients et les attacher à vos rapports."
+      blurContent
+    >
     <div className="max-w-3xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
@@ -376,5 +382,6 @@ export default function ClientsPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </UpgradeGate>
   );
 }

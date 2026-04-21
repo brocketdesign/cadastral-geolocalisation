@@ -130,7 +130,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { db } = await connectToDatabase();
-    const configs = await db.collection('ads_config').find({}).toArray();
+    const configs = await db.collection('ads_config').find({ enabled: true }).toArray();
 
     if (!configs || configs.length === 0) {
       return res.status(200).json({ textAds: DEFAULT_TEXT_ADS, imageAds: DEFAULT_IMAGE_ADS });
