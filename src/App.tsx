@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import { useGoogleAnalytics } from '@/hooks/use-google-analytics';
 import Landing from '@/pages/Landing';
 import Pricing from '@/pages/Pricing';
 import Dashboard from '@/pages/Dashboard';
@@ -21,11 +22,10 @@ import ReportsDashboard from '@/pages/ReportsDashboard';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import RequireAuth from '@/components/features/RequireAuth';
 
-function App() {
+function AppRoutes() {
+  useGoogleAnalytics();
   return (
-    <BrowserRouter>
-      <Toaster richColors position="top-right" />
-      <Routes>
+    <Routes>
         {/* Public pages */}
         <Route path="/" element={<Landing />} />
         <Route path="/pricing" element={<Pricing />} />
@@ -184,6 +184,14 @@ function App() {
         {/* Stripe checkout success — public, no layout needed */}
         <Route path="/checkout/success" element={<CheckoutSuccess />} />
       </Routes>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Toaster richColors position="top-right" />
+      <AppRoutes />
     </BrowserRouter>
   );
 }
