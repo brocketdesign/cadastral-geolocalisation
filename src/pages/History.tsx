@@ -93,7 +93,7 @@ export default function HistoryPage() {
       blurContent
     >
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Historique des recherches</h1>
           <p className="text-slate-500 text-sm mt-1">
@@ -101,7 +101,7 @@ export default function HistoryPage() {
           </p>
         </div>
         {history.length > 0 && (
-          <Button variant="outline" size="sm" onClick={handleClearAll} className="text-red-600 hover:text-red-700">
+          <Button variant="outline" size="sm" onClick={handleClearAll} className="text-red-600 hover:text-red-700 shrink-0">
             <Trash2 className="w-4 h-4 mr-1" />
             Tout supprimer
           </Button>
@@ -127,70 +127,112 @@ export default function HistoryPage() {
           {filteredHistory.map((item) => (
             <Card key={item.id} className="shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-3">
                   <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center shrink-0">
                     <MapPin className="w-5 h-5 text-emerald-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-slate-900">
-                        {item.result.commune} — {item.result.section} {item.result.numero}
-                      </h3>
-                      <Badge variant="secondary" className="text-xs">
-                        {item.result.territoire}
-                      </Badge>
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
+                          <h3 className="font-semibold text-slate-900 truncate">
+                            {item.result.commune} — {item.result.section} {item.result.numero}
+                          </h3>
+                          <Badge variant="secondary" className="text-xs shrink-0">
+                            {item.result.territoire}
+                          </Badge>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5 shrink-0" />
+                            {new Date(item.timestamp).toLocaleDateString('fr-FR', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                          <span className="font-mono">
+                            {item.result.lat.toFixed(4)}, {item.result.lng.toFixed(4)}
+                          </span>
+                        </div>
+                        {/* Action buttons — mobile: below text */}
+                        <div className="flex items-center gap-1 mt-2 -ml-2 sm:hidden">
+                          <button
+                            onClick={() => handleOpenReport(item.result)}
+                            className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
+                            title="Générer un rapport"
+                          >
+                            <FileText className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleAddToComparison(item)}
+                            className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
+                            title="Ajouter à la comparaison"
+                          >
+                            <TrendingUp className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleToggleFavorite(item.id)}
+                            className="p-2 rounded-md hover:bg-slate-100 transition-colors"
+                            title={item.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                          >
+                            <Star
+                              className={`w-4 h-4 ${
+                                item.isFavorite
+                                  ? 'text-amber-400 fill-amber-400'
+                                  : 'text-slate-300 hover:text-amber-400'
+                              }`}
+                            />
+                          </button>
+                          <button
+                            onClick={() => handleRemove(item.id)}
+                            className="p-2 rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      {/* Action buttons — desktop: on the right */}
+                      <div className="hidden sm:flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => handleOpenReport(item.result)}
+                          className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
+                          title="Générer un rapport"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleAddToComparison(item)}
+                          className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
+                          title="Ajouter à la comparaison"
+                        >
+                          <TrendingUp className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleToggleFavorite(item.id)}
+                          className="p-2 rounded-md hover:bg-slate-100 transition-colors"
+                          title={item.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                        >
+                          <Star
+                            className={`w-4 h-4 ${
+                              item.isFavorite
+                                ? 'text-amber-400 fill-amber-400'
+                                : 'text-slate-300 hover:text-amber-400'
+                            }`}
+                          />
+                        </button>
+                        <button
+                          onClick={() => handleRemove(item.id)}
+                          className="p-2 rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-slate-500">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {new Date(item.timestamp).toLocaleDateString('fr-FR', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                      <span className="font-mono text-xs">
-                        {item.result.lat.toFixed(4)}, {item.result.lng.toFixed(4)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => handleOpenReport(item.result)}
-                      className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
-                      title="Générer un rapport"
-                    >
-                      <FileText className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleAddToComparison(item)}
-                      className="p-2 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
-                      title="Ajouter à la comparaison"
-                    >
-                      <TrendingUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleToggleFavorite(item.id)}
-                      className="p-2 rounded-md hover:bg-slate-100 transition-colors"
-                      title={item.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-                    >
-                      <Star
-                        className={`w-4 h-4 ${
-                          item.isFavorite
-                            ? 'text-amber-400 fill-amber-400'
-                            : 'text-slate-300 hover:text-amber-400'
-                        }`}
-                      />
-                    </button>
-                    <button
-                      onClick={() => handleRemove(item.id)}
-                      className="p-2 rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
               </CardContent>

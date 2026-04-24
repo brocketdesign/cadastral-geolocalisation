@@ -154,7 +154,7 @@ function PageHeader() {
         <Megaphone className="w-3.5 h-3.5" />
         Espace publicitaire
       </div>
-      <h1 className="text-3xl font-bold text-slate-900">
+      <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
         Touchez des professionnels de l'immobilier
       </h1>
       <p className="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
@@ -491,14 +491,14 @@ function AdvertiseDashboard() {
 
               {/* Price summary */}
               {selectedPeriod && (
-                <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 flex items-center justify-between">
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="text-xs text-emerald-600 font-medium">Estimation indicative</p>
                     <p className="text-xs text-emerald-700 mt-0.5">
                       {format.label} · {selectedPeriod.startsWith('1w') ? '1 semaine' : selectedPeriod.startsWith('2w') ? '2 semaines' : selectedPeriod.startsWith('1m') ? '1 mois' : '3 mois'}
                     </p>
                   </div>
-                  <p className="text-lg font-bold text-emerald-700">
+                  <p className="text-lg font-bold text-emerald-700 shrink-0">
                     {selectedPeriod.startsWith('1w') ? `${format.prices.week} €`
                       : selectedPeriod.startsWith('2w') ? `${format.prices.week * 2} €`
                       : selectedPeriod.startsWith('1m') ? `${format.prices.month} €`
@@ -507,14 +507,14 @@ function AdvertiseDashboard() {
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-1">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
                 <p className="text-xs text-slate-400">
                   Votre demande sera examinée sous 48h. Aucun paiement maintenant.
                 </p>
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm gap-2"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm gap-2 shrink-0"
                 >
                   {submitting ? (
                     <span className="animate-pulse">Envoi…</span>
@@ -544,23 +544,21 @@ function AdvertiseDashboard() {
           <Card className="border-slate-200 overflow-hidden">
             <div className="divide-y divide-slate-100">
               {MOCK_MY_REQUESTS.map((req) => (
-                <div key={req.id} className="flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors">
-                  <div className="flex items-center gap-4 min-w-0">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-slate-900">
-                        {req.format}
-                        <span className="text-slate-400 font-normal"> · {req.period}</span>
-                      </p>
-                      {req.note && (
-                        <p className="text-xs text-slate-400 mt-0.5 truncate">{req.note}</p>
-                      )}
-                    </div>
+                <div key={req.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-5 py-4 gap-2 hover:bg-slate-50 transition-colors">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">
+                      {req.format}
+                      <span className="text-slate-400 font-normal"> · {req.period}</span>
+                    </p>
+                    {req.note && (
+                      <p className="text-xs text-slate-400 mt-0.5 truncate">{req.note}</p>
+                    )}
                   </div>
-                  <div className="flex items-center gap-4 shrink-0 ml-4">
+                  <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                     <p className="text-sm font-semibold text-slate-700">{req.budget}</p>
                     <StatusBadge status={req.status} />
                     <p className="text-xs text-slate-400 hidden sm:block">{req.submittedAt}</p>
-                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                    <ChevronRight className="w-4 h-4 text-slate-300 hidden sm:block" />
                   </div>
                 </div>
               ))}

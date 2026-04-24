@@ -63,7 +63,7 @@ export default function ReportsDashboard() {
       featureLabel="La génération de rapports PDF est réservée au plan Pro. Passez au Pro pour créer des rapports professionnels pour vos clients."
     >
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Mes rapports</h1>
             <p className="text-slate-500 text-sm mt-1">
@@ -115,62 +115,86 @@ export default function ReportsDashboard() {
             {reports.map((report) => (
               <Card key={report.id} className="shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center shrink-0">
                       <FileText className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-semibold text-slate-900">
-                          {report.result.commune} — {report.result.section}{' '}
-                          {report.result.numero}
-                        </h3>
-                        <Badge variant="secondary" className="text-xs">
-                          {report.result.territoire}
-                        </Badge>
+                      <div className="flex items-start gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
+                            <h3 className="font-semibold text-slate-900 truncate">
+                              {report.result.commune} — {report.result.section}{' '}
+                              {report.result.numero}
+                            </h3>
+                            <Badge variant="secondary" className="text-xs shrink-0">
+                              {report.result.territoire}
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3.5 h-3.5 shrink-0" />
+                              {new Date(report.timestamp).toLocaleDateString('fr-FR', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+                            {report.agencyName && (
+                              <span className="flex items-center gap-1">
+                                <Building2 className="w-3.5 h-3.5" />
+                                {report.agencyName}
+                              </span>
+                            )}
+                            {report.clientName && (
+                              <span className="flex items-center gap-1">
+                                <User className="w-3.5 h-3.5" />
+                                {report.clientName}
+                              </span>
+                            )}
+                          </div>
+                          {/* Actions — mobile: below text */}
+                          <div className="flex items-center gap-1 mt-2 -ml-1 sm:hidden">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-emerald-600 border-emerald-200 hover:bg-emerald-50 h-8 text-xs"
+                              onClick={() => handleRegenerate(report)}
+                            >
+                              <Download className="w-3.5 h-3.5 mr-1" />
+                              Télécharger
+                            </Button>
+                            <button
+                              onClick={() => handleRemove(report.id)}
+                              className="p-2 rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {/* Actions — desktop: on the right */}
+                        <div className="hidden sm:flex items-center gap-1 shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                            onClick={() => handleRegenerate(report)}
+                          >
+                            <Download className="w-4 h-4 mr-1" />
+                            Télécharger
+                          </Button>
+                          <button
+                            onClick={() => handleRemove(report.id)}
+                            className="p-2 rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5" />
-                          {new Date(report.timestamp).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                        {report.agencyName && (
-                          <span className="flex items-center gap-1">
-                            <Building2 className="w-3.5 h-3.5" />
-                            {report.agencyName}
-                          </span>
-                        )}
-                        {report.clientName && (
-                          <span className="flex items-center gap-1">
-                            <User className="w-3.5 h-3.5" />
-                            {report.clientName}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
-                        onClick={() => handleRegenerate(report)}
-                      >
-                        <Download className="w-4 h-4 mr-1" />
-                        Télécharger
-                      </Button>
-                      <button
-                        onClick={() => handleRemove(report.id)}
-                        className="p-2 rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </div>
                   </div>
                 </CardContent>

@@ -49,10 +49,10 @@ export default function UpgradeGate({
   if (blurContent) {
     return (
       <div className="relative">
-        <div className="pointer-events-none select-none blur-sm opacity-60">
+        <div className="pointer-events-none select-none blur-sm opacity-60 max-h-72 sm:max-h-none overflow-hidden">
           {children}
         </div>
-        <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[2px] rounded-xl">
+        <div className="absolute inset-0 flex items-center justify-center p-4 bg-white/60 backdrop-blur-[2px] rounded-xl">
           <UpgradeCard label={label} />
         </div>
       </div>
@@ -66,8 +66,8 @@ export default function UpgradeGate({
 
 function UpgradeCard({ label }: { label: string }) {
   return (
-    <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white shadow-lg max-w-md mx-auto">
-      <CardContent className="py-8 px-6 text-center space-y-4">
+    <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white shadow-lg max-w-md w-full mx-auto">
+      <CardContent className="py-6 sm:py-8 px-4 sm:px-6 text-center space-y-3 sm:space-y-4">
         <div className="mx-auto w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center">
           <Lock className="w-6 h-6 text-emerald-600" />
         </div>
