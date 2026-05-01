@@ -73,7 +73,7 @@ export default function DashboardLayout({
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transform transition-transform duration-200 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:flex lg:flex-col ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transform transition-transform duration-200 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:shrink-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -95,8 +95,8 @@ export default function DashboardLayout({
         <nav className="flex-1 py-4 overflow-y-auto">
 
           {/* ── Recherche ── */}
-          <div className="px-3 mb-1.5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+          <div className="px-3 mb-1">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest px-3">
               Recherche
             </p>
           </div>
@@ -120,8 +120,8 @@ export default function DashboardLayout({
           })}
 
           {/* ── Analyse & Veille ── */}
-          <div className="px-3 mt-5 mb-1.5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+          <div className="px-3 mt-5 mb-1">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest px-3">
               Analyse & Veille
             </p>
           </div>
@@ -145,8 +145,8 @@ export default function DashboardLayout({
           })}
 
           {/* ── Rapports ── */}
-          <div className="px-3 mt-5 mb-1.5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+          <div className="px-3 mt-5 mb-1">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest px-3">
               Rapports
             </p>
           </div>
@@ -189,8 +189,8 @@ export default function DashboardLayout({
           </Link>
 
           {/* ── Compte ── */}
-          <div className="px-3 mt-5 mb-1.5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+          <div className="px-3 mt-5 mb-1">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest px-3">
               Compte
             </p>
           </div>
@@ -217,8 +217,8 @@ export default function DashboardLayout({
           </Link>
 
           {/* ── Publicité ── */}
-          <div className="px-3 mt-5 mb-1.5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+          <div className="px-3 mt-5 mb-1">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest px-3">
               Publicité
             </p>
           </div>
@@ -237,8 +237,8 @@ export default function DashboardLayout({
 
           {isAdmin && (
             <>
-              <div className="px-3 mt-6 mb-2">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3">
+              <div className="px-3 mt-5 mb-1">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest px-3">
                   Administrateur
                 </p>
               </div>
